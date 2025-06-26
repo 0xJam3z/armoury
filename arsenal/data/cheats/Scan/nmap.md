@@ -2,12 +2,12 @@
 
 #plateform/linux #target/remote #cat/RECON #tag/scan
 
-## nmap - hosts alive
+## nmap - hosts alive (ping scan)
 ```
 nmap -sn <ip_range>
 ```
 
-## nmap - classic scan
+## nmap - classic scan (default scripts and version detection)
 ```
 nmap -sC -sV <ip>
 ```
@@ -17,59 +17,65 @@ nmap -sC -sV <ip>
 nmap -iL <targets_file>
 ```
 
-## nmap - classic scan + save
+## nmap - classic scan + save output to all formats
 ```
 nmap -sC -sV -oA <output_file> <ip>
 ```
 
-## nmap - quick scan top ports 100
+## nmap - quick scan top 100 ports
 ```
 nmap --top-ports 100 --open -sV <ip>
 ```
 
-## nmap - big top ports 5000
+## nmap - scan top 5000 ports
 ```
 nmap --top-ports 5000 --open -sV <ip>
 ```
 
-## nmap - full port
+## nmap - full port scan
 ```
 nmap -p- -sV <ip>
 ```
 
-## nmap - host with a given port
+## nmap - scan specific ports
 ```
-nmap <ip> -p<port_list> --open
+nmap -p<port_list> --open <ip>
 ```
 
-## nmap - FULL
+## nmap - aggressive scan (includes OS detection, version detection, script scanning, and traceroute)
+```
+nmap -A <ip>
+```
+
+## nmap - comprehensive scan with vulnerability scripts
 ```
 IP=<ip>;
-ports=$(nmap -p- --min-rate=1000 -n -T4 $IP | grep ^[0-9] | cut -d '/' -f 1 | tr '\n' ',' | sed s/,$//);
-nmap -Pn -sC -sV -p$ports $IP -oN scan.txt --reason --script=vuln
+ports=$(nmap -p- --min-rate=1000 -T4 $IP | grep ^[0-9] | cut -d '/' -f 1 | tr '\n' ',' | sed s/,$//);
+nmap -p$ports -sC -sV --script=vuln,exploit,auth,discovery -oN scan.txt --reason $IP
 ```
 
-## nmap - udp scan
+## nmap - udp scan (top 100 ports)
 ```
-nmap -sU <ip>
-```
-
-## nmap - low rate Classic
-```
-nmap --max-rate 100 -sC -sV <ip>
+nmap -sU --top-ports 100 <ip>
 ```
 
-## massscan - full port
+## nmap - slow and stealthy scan
 ```
-masscan -p 1-65535 <ip> -e <dev> --rate=1000
-```
-
-## nmap - SMB signing disabled
-```
-nmap -Pn -sS -T4 --open --script smb-security-mode -p445 <ip>
+nmap -sS -T2 --max-rate 50 <ip>
 ```
 
-## nmap behind proxy - tcp connect (-sT) - no dns (-n)
+## massscan - fast full port scan
 ```
-proxychains nmap -n -sT -sV -Pn --open -oA <output_file> -iL <targets_file>
+masscan -p1-65535 <ip> --rate=1000 -i <interface>
 ```
+
+## nmap - check for SMB signing
+```
+nmap -p 445 --script=smb2-security-mode <ip>
+```
+
+## nmap - scan behind a proxy
+```
+proxychains nmap -sT -Pn -n --open -oA <output_file> -iL <targets_file>
+```
+

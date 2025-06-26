@@ -4,47 +4,47 @@
 
 #plateform/linux  #target/local  #cat/CRACKING/PASSWORD 
 
-## hashcat - basic md5 (joomla/wordpress) - wordlist
+## Hashcat - Crack MD5 (Joomla/WordPress) with wordlist
 ```
-hashcat -a 0 -m 400 hashes <wordlist>
-```
-
-## hashcat - basic md5 (joomla/wordpress) - wordlist with rules
-```
-hashcat -a 0 -m 400 hashes <wordlist> -r /usr/share/doc/hashcat/rules/best64.rule 
+hashcat -a 0 -m 400 <hash_file> <wordlist>
 ```
 
-## hashcat - kerberos ticket (after kerberoasting)
+## Hashcat - Crack MD5 (Joomla/WordPress) with wordlist and rules
 ```
-hashcat -m 13100 --force -a 0 hashes <wordlist> 
-```
-
-## hashcat - LM
-```
-hashcat -m 3000 -a 0 hashes <wordlist> 
+hashcat -a 0 -m 400 <hash_file> <wordlist> -r /usr/share/doc/hashcat/rules/best64.rule
 ```
 
-## hashcat - NTLM
+## Hashcat - Crack Kerberos TGS-REP (13100) with wordlist
 ```
-hashcat -m 1000 -a 0 hashes <wordlist> 
-```
-
-## hashcat - NTLMv1
-```
-hashcat -m 5500 -a 0 hashes <wordlist> 
+hashcat -m 13100 -a 0 <hash_file> <wordlist>
 ```
 
-## hashcat - NTLMv2
+## Hashcat - Crack LM (3000) with wordlist
 ```
-hashcat -m 5600 -a 0 hashes <wordlist> 
-```
-
-## hashcat - NTLMv2 - Combination attack (ex:passpass,testtest,passtest,etc)
-```
-hashcat -m 5600 --force -a 1 hashes <custom_wordlist> <custom_wordlist>
+hashcat -m 3000 -a 0 <hash_file> <wordlist>
 ```
 
-## hashcat - generate wordlist using rules
+## Hashcat - Crack NTLM (1000) with wordlist
+```
+hashcat -m 1000 -a 0 <hash_file> <wordlist>
+```
+
+## Hashcat - Crack NetNTLMv1 (5500) with wordlist
+```
+hashcat -m 5500 -a 0 <hash_file> <wordlist>
+```
+
+## Hashcat - Crack NetNTLMv2 (5600) with wordlist
+```
+hashcat -m 5600 -a 0 <hash_file> <wordlist>
+```
+
+## Hashcat - Crack NetNTLMv2 (5600) with combination attack
+```
+hashcat -m 5600 -a 1 <hash_file> <custom_wordlist> <custom_wordlist>
+```
+
+## Hashcat - Generate wordlist using rules
 ```
 cat keywords.txt | hashcat -r <rule_file> --stdout > ./<custom_wordlist>
 ```

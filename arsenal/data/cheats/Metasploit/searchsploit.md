@@ -2,14 +2,16 @@
 
 % searchsploit, exploit db
 
-## searchsploit mirror exploitDB id
+## Searchsploit - Mirror ExploitDB ID
+Mirrors (downloads) an exploit from the Exploit Database by its ID.
 #plateform/linux #target/local #cat/UTILS #cat/RECON  
 ```
-searchsploit -m <ebdid>
+searchsploit -m <exploit_db_id>
 ```
 
-## searchsploit show exploitDB id
+## Searchsploit - Show ExploitDB ID
+Shows the content of an exploit from the Exploit Database by its ID.
 #plateform/linux #target/local #cat/UTILS  #cat/RECON 
 ```
-searchsploit -x <edbid>
+searchsploit -x <exploit_db_id>
 ```

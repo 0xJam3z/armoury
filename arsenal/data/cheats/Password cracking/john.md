@@ -4,34 +4,39 @@
 
 #plateform/linux  #target/local  #cat/CRACKING/PASSWORD 
 
-## john LM
+## John - Crack LM hashes
 ```
 john --wordlist=<wordlist> --format=lm hash.txt
 ```
 
-## john NTLM
+## John - Crack NTLM hashes
 ```
 john --wordlist=<wordlist> --format=nt hash.txt
 ```
 
-## john NTLMv1
+## John - Crack NetNTLMv1 hashes
 ```
 john --wordlist=<wordlist> --format=netntlm hash.txt
 ```
 
-## john NTLMv2
+## John - Crack NetNTLMv2 hashes
 ```
 john --wordlist=<wordlist> --format=netntlmv2 hash.txt
 ```
 
-## john ssh convert key 
+## John - Convert SSH private key to a crackable hash
 ```
-python /usr/share/john/ssh2john.py <ssh_key> > <ssh_hash|sshkey.hash>
+python /usr/share/john/ssh2john.py <ssh_key> > <ssh_hash_file>
 ```
 
-## john ssh
+## John - Crack SSH private key hash
 ```
-john --wordlist=<wordlist> <ssh_hash|sshkey.hash>
+john --wordlist=<wordlist> <ssh_hash_file>
+```
+
+## John - Crack MD5 hashes
+```
+john --wordlist=<wordlist> --format=raw-md5 hash.txt
 ```
 
 = wordlist: /usr/share/wordlist/rockyou.lst

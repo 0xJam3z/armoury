@@ -2,88 +2,88 @@
 
 % bruteforce, access
 
-## Hydra - ssh - userlist and password list - 22
+## Hydra - SSH brute-force with user and password lists
 #plateform/linux #target/remote #protocol/ssh #port/22 #cat/ATTACK/BRUTEFORCE-SPRAY 
 
 ```bash
-hydra -L <userlist> -P <passlist> <ip> ssh 
+hydra -L <userlist> -P <passlist> <ip> ssh
 ```
 
-## Hydra - ssh - user and password  - 22
+## Hydra - SSH brute-force with single user and password
 #plateform/linux #target/remote #protocol/ssh #port/22 #cat/ATTACK/BRUTEFORCE-SPRAY 
 
 ```bash
-hydra -l <user|root> -p <password|root> <ip> ssh 
+hydra -l <user> -p <password> <ip> ssh
 ```
 
-## Hydra - ssh - user=password - 22
+## Hydra - SSH brute-force with user=password
 #plateform/linux #target/remote #protocol/ssh #port/22 #cat/ATTACK/BRUTEFORCE-SPRAY 
 
 ```
-hydra -L <userlist> -e s <ip> ssh 
+hydra -L <userlist> -e s <ip> ssh
 ```
 
-## Hydra - ssh - null password - 22
+## Hydra - SSH brute-force with null password
 #plateform/linux #target/remote #protocol/ssh #port/22 #cat/ATTACK/BRUTEFORCE-SPRAY 
 
 ```
-hydra -l <user|root> -e n <ip> ssh 
+hydra -l <user> -e n <ip> ssh
 ```
 
-## Hydra - ssh - password=reverseuser - 22
+## Hydra - SSH brute-force with password=reverseuser
 #plateform/linux #target/remote #protocol/ssh #port/22 #cat/ATTACK/BRUTEFORCE-SPRAY 
 
 ```
-hydra -L <userlist> -e r <ip> ssh 
+hydra -L <userlist> -e r <ip> ssh
 ```
 
-## Hydra - ssh - file "login:pass" format - specify port
+## Hydra - SSH brute-force with "login:pass" file and custom port
 #plateform/linux #target/remote #protocol/ssh #port/custom #cat/ATTACK/BRUTEFORCE-SPRAY 
 
 ```
-hydra -t 4 -s <port> -C <file_login_pass> <ip> ssh 
+hydra -t 4 -s <port> -C <file_login_pass> <ip> ssh
 ```
 
-## Hydra - ftp - 21 
+## Hydra - FTP brute-force
 #protocol/ftp #port/21 #plateform/linux #target/remote  #cat/ATTACK/BRUTEFORCE-SPRAY 
 
 ```
-hydra -L <userlist> -P <passlist> <ip> ftp 
+hydra -L <userlist> -P <passlist> <ip> ftp
 ```
 
-## Hydra - smb - 445
+## Hydra - SMB brute-force
 #protocol/smb #port/445 #plateform/linux #target/remote #cat/ATTACK/BRUTEFORCE-SPRAY 
 
 ```
 hydra -L <userlist> -P <passlist> <ip> smb
 ```
 
-## Hydra - mysql - 3306
+## Hydra - MySQL brute-force
 #protocol/mysql #port/3306 #plateform/linux #target/remote #cat/ATTACK/BRUTEFORCE-SPRAY 
 
 ```
-hydra -L <userlist> -P <passlist> <ip> mysql 
+hydra -L <userlist> -P <passlist> <ip> mysql
 ```
 
-## Hydra - vnc - 5900
+## Hydra - VNC brute-force
 #protocol/vnc #port/5900 #plateform/linux #target/remote #cat/ATTACK/BRUTEFORCE-SPRAY 
 
 ```
-hydra -L <userlist> -P <passlist> <ip> vnc 
+hydra -L <userlist> -P <passlist> <ip> vnc
 ```
 
-## Hydra - postgres - 5432
+## Hydra - PostgreSQL brute-force
 #protocol/postgres #port/5432 #plateform/linux #target/remote #cat/ATTACK/BRUTEFORCE-SPRAY 
 
 ```
 hydra -L <userlist> -P <passlist> <ip> postgres
 ```
 
-## Hydra - telnet - 23
+## Hydra - Telnet brute-force
 #protocol/telnet #port/23 #plateform/linux #target/remote #cat/ATTACK/BRUTEFORCE-SPRAY 
 
 ```
-hydra -L <userlist> -P <passlist> <ip> telnet 
+hydra -L <userlist> -P <passlist> <ip> telnet
 ```
 
 = userlist: users.txt
