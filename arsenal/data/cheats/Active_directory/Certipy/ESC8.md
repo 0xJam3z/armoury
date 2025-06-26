@@ -1,4 +1,4 @@
-# ADCS ESC8
+# ADCS ESC8/ESC11
 
 %adcs, certificate, ActiveDirectory, template
 
