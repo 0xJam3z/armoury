@@ -1,4 +1,4 @@
-# ADCS ESC6/ESC11
+# ADCS ESC6
 
 % adcs, certificate, ActiveDirectory, template
 
