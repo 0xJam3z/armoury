@@ -36,6 +36,7 @@ This project is inspired by navi (<https://github.com/denisidoro/navi>) because 
 - samAccountName Attack
 - C2 Frameworks: Havoc, Cobalt Strike, Sliver
 - bloodyAD with Bloodhound Edges: GenericAll, WriteOwner, ForceChangePassword, GenericWrite
+- Installation Scripts for All Tools in Python Virtual Envionrment (venv)
 
 ## Install & Launch
 - with pip :
