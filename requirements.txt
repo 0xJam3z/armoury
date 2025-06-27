@@ -3,3 +3,13 @@ docutils
 pyperclip
 pyyaml
 pyfzf
+impacket
+minikerberos
+bloodhound
+bloodyAD
+crackmapexec
+coercer
+lsassy
+mitm6
+drupwn
+sublist3r
