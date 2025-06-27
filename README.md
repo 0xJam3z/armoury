@@ -20,7 +20,7 @@ Original Authors of Arsenal:
 * Guillaume Muh
 * mayfly
 
-** "This project is inspired by navi (<https://github.com/denisdoro/navi>) because the original version was in bash and too hard to understand to add features"
+** This project is inspired by navi (<https://github.com/denisdoro/navi>) because the original version was in bash and too hard to understand to add features **
 
 ---
 
