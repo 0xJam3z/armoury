@@ -79,4 +79,15 @@ then you can start run armoury with the prefix option:
 ```
 armoury -f
 ```
-
+---
+# Troubleshooting (From [Arsenal](https://github.com/Orange-Cyberdefense/arsenal))
+```
+========== OSError ============
+Arsenal needs TIOCSTI enable for running
+Please run the following commands as root to fix this issue on the current session :
+sysctl -w dev.tty.legacy_tiocsti=1
+If you want this workaround to survive a reboot,
+add the following configuration to sysctl.conf file and reboot :
+echo "dev.tty.legacy_tiocsti=1" >> /etc/sysctl.conf
+More details about this bug here: https://github.com/Orange-Cyberdefense/arsenal/issues/77
+```
