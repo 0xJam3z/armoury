@@ -23,7 +23,7 @@ Original Authors of Arsenal:
 This project is inspired by navi (<https://github.com/denisidoro/navi>) because the original version was in bash and too hard to understand to add features
 ---
 
-## Armoury new features
+# **New Features**
 
 - New colors
 - Added ESC1-11; 15; 16
