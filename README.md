@@ -1,12 +1,15 @@
 # Armoury
 
 ![](img/logo.png)
+---
 
-Armoury is a lightweight inventory, quick-access launcher, and command reference tool designed specifically for penetration testers and red teamers.
+# Armoury 
+is a lightweight inventory, quick-access launcher, and command reference tool designed specifically for penetration testers and red teamers.
 
+---
 ![](img/arsenal.gif)
 
-
+---
 ## Credits & Contributions 
 Armoury is an Arsenal fork for more up-to-date and additional tools.
 Authors of this project:
@@ -18,7 +21,7 @@ Original Authors of Arsenal:
 * mayfly
 
 This project is inspired by navi (<https://github.com/denisidoro/navi>) because the original version was in bash and too hard to understand to add features
-
+---
 
 ## Armoury new features
 
@@ -29,6 +32,7 @@ This project is inspired by navi (<https://github.com/denisidoro/navi>) because 
 - C2 Frameworks: Havoc, Cobalt Strike, Sliver
 - bloodyAD with Bloodhound Edges: GenericAll, WriteOwner, ForceChangePassword, GenericWrite
 - Installation Scripts for All Tools in Python Virtual Envionrment (venv)
+---
 
 ## Installation
 - All in One Install :
@@ -60,7 +64,7 @@ a
 ```
 >set ip=192.168.1.1 #replaces all <ip> with set value
 ```
-
+---
 
 ## Add a prefix commands generated
 
