@@ -35,11 +35,10 @@ class CheatslistMenu:
         y, x = 5, 0
         ncols, nlines = 5, 1
         promptwin = curses.newwin(nlines, ncols, y, x)
-        promptwin.bkgd(' ', curses.color_pair(256))
         try:
-            promptwin.addstr("\u2620  >", curses.color_pair(Gui.PROMPT_COLOR))
+            promptwin.addstr("\u2620  >", curses.color_pair(Gui.BASIC_COLOR))
         except:
-            promptwin.addstr(">>>>", curses.color_pair(Gui.PROMPT_COLOR))
+            promptwin.addstr(">>>>", curses.color_pair(Gui.BASIC_COLOR))
         promptwin.refresh()
         return promptwin
 
@@ -51,7 +50,6 @@ class CheatslistMenu:
         y, x = 0, 0
         ncols, nlines = self.width, 4
         infowin = curses.newwin(nlines, ncols, y, x)
-        infowin.bkgd(' ', curses.color_pair(265))
         selected_cheat = self.selected_cheat()
         if selected_cheat is not None:
             infowin.addstr(y + 1, x + 2, Gui.draw_string(selected_cheat.name, self.width - 3),
@@ -60,10 +58,7 @@ class CheatslistMenu:
             #                curses.color_pair(Gui.INFO_DESC_COLOR))
             infowin.addstr(y + 2, x + 2, Gui.draw_string(selected_cheat.printable_command, self.width - 3),
                            curses.color_pair(Gui.INFO_CMD_COLOR))
-        infowin.border(0, 0, 0, 0, 0, 0, 0, 0)
-        infowin.attron(curses.color_pair(266))
         infowin.border()
-        infowin.attroff(curses.color_pair(266))
         infowin.refresh()
         return infowin
 
@@ -74,7 +69,6 @@ class CheatslistMenu:
         y, x = 5, 6
         ncols, nlines = self.width - 5, 1
         editwin = curses.newwin(nlines, ncols, y, x)
-        editwin.bkgd(' ', curses.color_pair(256))
         editwin.addstr(self.input_buffer, curses.color_pair(Gui.BASIC_COLOR))
         editwin.refresh()
         return editwin
@@ -142,7 +136,6 @@ class CheatslistMenu:
         y, x = 6, 0
         ncols, nlines = self.width, self.height - 6
         listwin = curses.newwin(nlines, ncols, y, x)
-        listwin.bkgd(' ', curses.color_pair(256))
 
         visible_cheats = self.cheats[self.page_position:self.max_visible_cheats + self.page_position]
         counter = self.page_position
@@ -163,7 +156,6 @@ class CheatslistMenu:
 
         # print nb cmd info (bottom left)
         nbinfowin = curses.newwin(nlines, ncols, y, x)
-        nbinfowin.bkgd(' ', curses.color_pair(256))
         nbinfowin.addstr(info, curses.color_pair(Gui.BASIC_COLOR))
         nbinfowin.refresh()
 
@@ -176,7 +168,6 @@ class CheatslistMenu:
                 cheat_file = cheat_file[0:self.width - 17] + ".."
 
             fileinfowin = curses.newwin(nlines, ncols, y, self.width - (len(cheat_file) + 3))
-            fileinfowin.bkgd(' ', curses.color_pair(256))
             fileinfowin.addstr(cheat_file, curses.color_pair(Gui.BASIC_COLOR))
             fileinfowin.refresh()
 
@@ -316,8 +307,6 @@ class CheatslistMenu:
         self.cursorpos = 0
 
         while True:
-            # Set the entire screen background using our dedicated color pair
-            stdscr.bkgd(' ', curses.color_pair(256))
             stdscr.refresh()
             self.cheats = self.search()
             self.draw(stdscr)
@@ -516,7 +505,6 @@ class ArgslistMenu:
         arg = Gui.cmd.args[self.current_arg]
         max_size = self.max_preview_size - 4 - len(arg[0])
         selectedargline = curses.newwin(nlines, ncols, y, x)
-        selectedargline.bkgd(' ', curses.color_pair(265))
         selectedargline.addstr("   > ", curses.color_pair(Gui.BASIC_COLOR))
         selectedargline.addstr(arg[0], curses.color_pair(Gui.ARG_NAME_COLOR))
         selectedargline.addstr(" = " + Gui.draw_string(arg[1], max_size), curses.color_pair(Gui.BASIC_COLOR))
@@ -529,7 +517,6 @@ class ArgslistMenu:
         y, x = self.AB_TOP + y_pos, self.AB_SIDE + 1
         ncols, nlines = self.width - 2 * (self.AB_SIDE + 1), Gui.cmd.nb_args + 1
         argwin = curses.newwin(nlines, ncols, y, x)
-        argwin.bkgd(' ', curses.color_pair(265))
         for arg in Gui.cmd.args:
             max_size = self.max_preview_size + 4
             argline = Gui.draw_string("     {} = {}".format(*arg), max_size) + "\n"
@@ -641,7 +628,6 @@ class ArgslistMenu:
 
         try:
             argprev = curses.newwin(nlines, ncols, y, x)
-            argprev.bkgd(' ', curses.color_pair(265))
 
             # draw command
             self.draw_cmd_preview(argprev, padding_text_border, cmd_pos)
@@ -661,10 +647,6 @@ class ArgslistMenu:
                 # set cursor position
                 curses.setsyx(self.y_init, self.xcursor)
                 curses.doupdate()
-            argprev.attron(curses.color_pair(266))
-            argprev.border()
-            argprev.attroff(curses.color_pair(266))
-            argprev.refresh()
         except curses.error:
             # catch all curses error to not end with an exception in case of size error
             pass
@@ -712,9 +694,6 @@ class ArgslistMenu:
         Gui.init_colors()
         stdscr.clear()
         while True:
-            # Set the entire screen background using our dedicated color pair
-            stdscr.bkgd(' ', curses.color_pair(256))
-
             stdscr.refresh()
             self.draw(stdscr)
             c = stdscr.getch()
@@ -791,32 +770,22 @@ class Gui:
     arsenalGlobalVars = {}
     savefile = config.savevarfile
     # colors
-    # Catppuccin Mocha (Mauve) - User specified
-    color_base = 235      # #1e1e2e
-    color_mantle = 234    # #181825
-    color_crust = 233     # #11111b
-    color_text = 189      # #cdd6f4
-    color_subtext1 = 146  # #bac2de
-    color_subtext0 = 145  # #a6adc8
-    color_mauve = 183     # #cba6f7
-    color_border = 237    # #313244
-
-    BASIC_COLOR = color_text
-    COL1_COLOR = color_text
-    COL2_COLOR = color_mauve
-    COL3_COLOR = color_subtext0
-    COL4_COLOR = color_subtext1
-    COL5_COLOR = color_mauve
-    COL1_COLOR_SELECT = 260
-    COL2_COLOR_SELECT = 261
-    COL3_COLOR_SELECT = 262
-    COL4_COLOR_SELECT = 263
-    CURSOR_COLOR_SELECT = 264
-    PROMPT_COLOR = color_mauve
-    INFO_NAME_COLOR = color_mauve
-    INFO_DESC_COLOR = color_text
-    INFO_CMD_COLOR = color_text
-    ARG_NAME_COLOR = color_mauve
+    BASIC_COLOR = 0  # output std
+    COL1_COLOR = 7
+    COL2_COLOR = 4  # gold
+    COL3_COLOR = 14  # purple light 
+    COL4_COLOR = 5  # 26  # violet clair: 14  # 4 yellow  # 6 purple # 7 cyan # 9 dark grey
+    COL5_COLOR = 5  # blue
+    COL1_COLOR_SELECT = 256  # output std invert
+    COL2_COLOR_SELECT = 256
+    COL3_COLOR_SELECT = 256
+    COL4_COLOR_SELECT = 256
+    CURSOR_COLOR_SELECT = 266  # background red
+    PROMPT_COLOR = 0
+    INFO_NAME_COLOR = 4  # 5
+    INFO_DESC_COLOR = 0
+    INFO_CMD_COLOR = 0
+    ARG_NAME_COLOR = 5
     loaded_menu = False
     with_tags = False
 
@@ -831,19 +800,7 @@ class Gui:
         curses.start_color()
         curses.use_default_colors()
         for i in range(0, 255):
-            curses.init_pair(i + 1, i, Gui.color_base)
-
-        # selected colors (text, bg)
-        curses.init_pair(256, Gui.color_text, Gui.color_base) # For main background
-        curses.init_pair(260, Gui.color_text, Gui.color_mantle)
-        curses.init_pair(261, Gui.color_mauve, Gui.color_mantle)
-        curses.init_pair(262, Gui.color_subtext0, Gui.color_mantle)
-        curses.init_pair(263, Gui.color_subtext1, Gui.color_mantle)
-        curses.init_pair(264, Gui.color_mauve, Gui.color_mantle) # Cursor
-
-        # Panel/Border colors
-        curses.init_pair(265, Gui.color_text, Gui.color_mantle) # Panel background
-        curses.init_pair(266, Gui.color_border, Gui.color_mantle) # Border on panel
+            curses.init_pair(i + 1, i, -1)
 
     @classmethod
     def get_ratios_for_column(cls, columns_in_use):
