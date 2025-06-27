@@ -11,7 +11,7 @@ is a lightweight inventory, quick-access launcher, and command reference tool de
 
 ---
 ## Credits & Contributions 
-Armoury is an Arsenal fork for more up-to-date and additional tools.
+Armoury is an **[Arsenal](https://github.com/Orange-Cyberdefense/arsenal) fork** for more up-to-date and additional tools.
 Authors of this project:
 * 0xSA-X1
 * 0xJam3z
