@@ -42,27 +42,54 @@ wfuzz -z file,<file> -u <url>FUZZ
 wfuzz -z file,<file> -X post -u <url> -d 'FUZZ=1'
 ```
 
-# Dirb
-
-% fuzzer, fuzz, dirb
-#plateform/linux #target/remote #cat/ATTACK/FUZZ
-## dirb commons
-```
-dirb <url> -w /usr/share/wordlists/dirb/common.txt
-```
-
 # ffuf
 
 % fuzzer, fuzz, ffuf
 #plateform/linux #target/remote #cat/ATTACK/FUZZ
-## ffuf fuzz keyword in url
+
+## Directory FUZZ (directory-list-2.3-medium)
 ```
-ffuf -w <wordlist> -u <url>/FUZZ
+ffuf -u <URL>/FUZZ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
 ```
 
-## ffuf fuzz Host filter response size
+## Directory FUZZ (common.txt)
 ```
-ffuf -w <wordlist> -u <url> -H "Host: FUZZ" -fs <response_size>
+ffuf -u <URL>/FUZZ -w /usr/share/wordlists/dirb/common.txt
+```
+
+## Directory FUZZ (raft-large-directories.txt)
+```
+ffuf -u <URL>/FUZZ -w /usr/share/seclists/Discovery/Web-Content/raft-large-directories.txt
+```
+
+## Directory FUZZ (big.txt)
+```
+ffuf -u <URL>/FUZZ -w /usr/share/seclists/Discovery/Web-Content/big.txt
+```
+
+## Subdomain FUZZ (subdomains-top1million-5000.txt)
+```
+ffuf -u <URL> -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -H "Host: FUZZ.<URL>"
+```
+
+## Subdomain FUZZ (namelist.txt)
+```
+ffuf -u <URL> -w /usr/share/seclists/Discovery/DNS/namelist.txt -H "Host: FUZZ.<URL>"
+```
+
+## Subdomain FUZZ (bitquark-subdomains-top100000.txt)
+```
+ffuf -u <URL> -w /usr/share/seclists/Discovery/DNS/bitquark-subdomains-top100000.txt -H "Host: FUZZ.<URL>"
+```
+
+## Subdomain FUZZ (fierce-hostlist.txt)
+```
+ffuf -u <URL> -w /usr/share/seclists/Discovery/DNS/fierce-hostlist.txt -H "Host: FUZZ.<URL>"
+```
+
+## Subdomain FUZZ (dns-Jhaddix.txt)
+```
+ffuf -u <URL> -w /usr/share/seclists/Discovery/DNS/dns-Jhaddix.txt -H "Host: FUZZ.<URL>"
 ```
 
 ## ffuf GET parameter fuzzing
@@ -70,19 +97,6 @@ ffuf -w <wordlist> -u <url> -H "Host: FUZZ" -fs <response_size>
 ffuf -w <wordlist> -u <url>?<param>=FUZZ -fs <response_size>
 ```
 
-## ffuf POST parameter fuzzing and filter response code 401
-```
-ffuf -w <wordlist> -u <url> -X POST -d "username=admin\&password=FUZZ" -fc 401
-```
-
-# nikto
-
-% fuzzer, fuzz, nikto
-#plateform/linux #target/remote #cat/ATTACK/FUZZ
-## nikto - first vuln scan
-```
-nikto -C all -h <url>
-```
 
 # feroxbuster
 
