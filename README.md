@@ -54,6 +54,12 @@ pip install --no-binary :all: .
 ./addalias.sh
 ```
 
+Don't forget to `source`:
+```
+source ~/.bashrc
+source ~/.zshrc
+```
+
 How to use/call the tool:
 ```
 a
