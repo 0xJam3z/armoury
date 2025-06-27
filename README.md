@@ -31,6 +31,7 @@ Original Authors of [Arsenal](https://github.com/Orange-Cyberdefense/arsenal):
 - C2 Frameworks: Havoc, Cobalt Strike, Sliver
 - bloodyAD with Bloodhound Edges: GenericAll, WriteOwner, ForceChangePassword, GenericWrite
 - Installation Scripts for All Tools in Python Virtual Envionrment (venv)
+- Enumeration with `Find`
 ---
 
 ## Installation
