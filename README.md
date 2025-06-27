@@ -16,11 +16,9 @@ Authors of this project:
 * 0xSA-X1
 * 0xJam3z
   
-Original Authors of Arsenal: 
+Original Authors of Arsenal (<https://github.com/Orange-Cyberdefense/arsenal>): 
 * Guillaume Muh
 * mayfly
-
-** This project is inspired by navi (<https://github.com/denisdoro/navi>) because the original version was in bash and too hard to understand to add features **
 
 ---
 
