@@ -1,13 +1,5 @@
-# ─── arsenal core ────────────────────────────────────────────────────
 libtmux
 docutils
 pyperclip
 pyyaml
 pyfzf
-
-# kerberos / bh / ad
-impacket
-minikerberos
-bloodhound
-bloodyAD
-coercer
