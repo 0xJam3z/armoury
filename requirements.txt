@@ -7,7 +7,6 @@ impacket
 minikerberos
 bloodhound
 bloodyAD
-crackmapexec
 coercer
 lsassy
 mitm6
