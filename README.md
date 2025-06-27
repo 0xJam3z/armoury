@@ -7,15 +7,8 @@ Armoury is just a quick inventory, reminder and launcher for pentest commands.
 
 ![](img/arsenal.gif)
 
-In armoury you can search for a command, select one and it's prefilled directly in your terminal. This functionality is independent of the shell used. Indeed arsenal emulates real user input (with TTY arguments and IOCTL) so arsenal works with all shells and your commands will be in the history.
 
-You have to enter arguments if needed, but armoury supports global variables. <br>
-For example, during a pentest we can set the variable `ip` to prefill all commands using an ip with the right one.
-
-To do that you just have to enter the following command in armoury:
-```
->set ip=10.10.10.10
-``` 
+## Credits & Contributions 
 Armoury is an Arsenal fork for more up-to-date and additional tools.
 Authors of this project:
 * 0xSA-X1
@@ -64,11 +57,9 @@ How to use/call the tool:
 ```
 a
 ```
-
-
-Inside your .bashrc or .zshrc add the path to `run` to help you do that you could launch the addalias.sh script
+## Setting Global Variable
 ```
-./addalias.sh
+>set ip=192.168.1.1 #replaces all <ip> with set value
 ```
 
 
