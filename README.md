@@ -18,7 +18,7 @@ To do that you just have to enter the following command in armoury:
 ``` 
 Armoury is an Arsenal fork for more up-to-date and additional tools.
 Authors of this project:
-* SA-X
+* 0xSA-X1
 * 0xJam3z
   
 Original Authors of Arsenal: 
