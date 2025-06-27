@@ -38,24 +38,26 @@ This project is inspired by navi (<https://github.com/denisidoro/navi>) because 
 - bloodyAD with Bloodhound Edges: GenericAll, WriteOwner, ForceChangePassword, GenericWrite
 - Installation Scripts for All Tools in Python Virtual Envionrment (venv)
 
-## Install & Launch
-- with pip :
-```
-python3 -m pip install armoury-cli
-```
-
-- run (we also advice you to add this alias : `alias a='armoury'`)
-```
-armoury
-```
-
-- manually:
+## Installation
+- All in One Install :
 ```
 git clone https://github.com/0xJam3z/armoury.git
 cd armoury
-python3 -m pip install -r requirements.txt
-./run
+chmod +x install_armoury.sh 
+chmod +x install_armoury_extras.sh
+python3 -m venv ~/armoury-venv                  
+source ~/armoury-venv/bin/activate
+pip install -r requirements.txt 
+pip install --no-binary :all: .
+./install_armoury.sh
+./install_armoury_extras.sh
+./addalias.sh
 ```
+
+```
+a
+```
+
 
 Inside your .bashrc or .zshrc add the path to `run` to help you do that you could launch the addalias.sh script
 ```
