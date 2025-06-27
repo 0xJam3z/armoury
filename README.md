@@ -16,8 +16,12 @@ To do that you just have to enter the following command in armoury:
 ```
 >set ip=10.10.10.10
 ``` 
-
-Original Authors: 
+Armoury is an Arsenal fork for more up-to-date and additional tools.
+Authors of this project:
+* SA-X
+* 0xJam3z
+  
+Original Authors of Arsenal: 
 * Guillaume Muh
 * mayfly
 
