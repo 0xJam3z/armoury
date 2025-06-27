@@ -2,7 +2,7 @@
 
 % ad, windows, powerview
 
-## load from remote
+## Pull Powerview from Repo
 #plateform/windows #target/remote  #cat/RECON 
 
 https://github.com/PowerShellMafia/PowerSploit/
@@ -55,7 +55,6 @@ Get-DomainGroup | Get-ObjectAcl -ResolveGUIDs | Foreach-Object {$_ | Add-Member 
 Get-DomainUser | Get-ObjectAcl -ResolveGUIDs | Foreach-Object {$_ | Add-Member -NotePropertyName Identity -NotePropertyValue (ConvertFrom-SID $_.SecurityIdentifier.value) -Force; $_} | Foreach-Object {if ($_.Identity -eq $("$env:UserDomain\$env:Username")) {$_}}
 ```
 
-
 ## Add GenericAll to target for user
 #plateform/windows #target/remote  #cat/ATTACK/EXPLOIT 
 ```powerview
@@ -82,12 +81,25 @@ Example: Get-DomainGroupMember "Domain Admins" -Recurse
 Get-DomainGroupMember -Identity "<group|Administrators>" -Domain <domain> -Recurse
 ```
 
-
-
 ## Get list of kerberoastable users
 #plateform/windows #target/remote  #cat/RECON 
 Description : The following will enumerate 'Kerberoastable' users for a given domain
 
 ```powershell
 Get-DomainUser -SPN -Domain <domain> | select name, samaccountname, serviceprincipalname
+```
+
+## Find Constrained Delegation
+```powershell
+Get-DomainComputer -TrustedToAuth | select -Property dnshostname,useraccountcontrol
+```
+
+## Non-Admin Users Ability to Add Members to Security Groups
+```powershell
+Find-ManagedSecurityGroups | select GroupName
+```
+
+## All Users with WriteProperty/GenericAll (Native)
+```
+(Get-ACL "AD:$((Get-ADUser daniel.carter).distinguishedname)").access  | ? {$_.ActiveDirectoryRights -match "WriteProperty" -or $_.ActiveDirectoryRights -match "GenericAll"} | Select IdentityReference,ActiveDirectoryRights -Unique | ft -W
 ```
