@@ -27,14 +27,11 @@ This project is inspired by navi (<https://github.com/denisidoro/navi>) because 
 ## Armoury new features
 
 - New colors
-- Add tmux new pane support (with -t)
-- Add default values in cheatsheets commands with `<argument|default_value>`
-- Support description inside cheatsheets
-- New categories and Tags
-- New cheatsheets
-- Add yml support (thx @0xswitch )
-- Add fzf support with ctrl+t (thx @mgp25)
-- Add prefix to commands generated (with -f)
+- Added ESC1-11; 15; 16
+- Added Shadow Credentials
+- samAccountName Attack
+- C2 Frameworks: Havoc, Cobalt Strike, Sliver
+- bloodyAD with Bloodhound Edges: GenericAll, WriteOwner, ForceChangePassword, GenericWrite
 
 ## Install & Launch
 - with pip :
