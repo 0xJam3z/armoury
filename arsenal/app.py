@@ -20,6 +20,35 @@ class App:
     def __init__(self):
         pass
 
+    def is_c2_payload_command(self, cmdline):
+        """
+        Detect if a command is a C2 payload generation command that should be copied to clipboard
+        """
+        c2_indicators = [
+            'generate --os',  # Sliver
+            'havoc payload',  # Havoc
+            'listener http',  # Cobalt Strike
+            'listener https', # Cobalt Strike
+            'listener dns',   # Cobalt Strike
+            'listener smb',   # Cobalt Strike
+        ]
+        
+        cmd_lower = cmdline.lower()
+        return any(indicator in cmd_lower for indicator in c2_indicators)
+
+    def copy_to_clipboard(self, cmdline):
+        """
+        Copy command to clipboard with fallback
+        """
+        try:
+            import pyperclip
+            pyperclip.copy(cmdline)
+            print(f"Command copied to clipboard: {cmdline}")
+            return True
+        except ImportError:
+            print("pyperclip not available. Command not copied to clipboard.")
+            return False
+
     def get_args(self):
         examples = '''examples:
         arsenal
@@ -110,6 +139,10 @@ class App:
                 else:
                     print("Arsenal: invalid internal command..")
                     break
+
+            # Check if it's a C2 payload command and auto-copy to clipboard
+            elif self.is_c2_payload_command(cmd.cmdline):
+                self.copy_to_clipboard(cmd.cmdline)
 
             # OPT: Copy CMD to clipboard
             elif args.copy:
