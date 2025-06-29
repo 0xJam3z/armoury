@@ -7,12 +7,12 @@ import re
 import time
 from curses import wrapper
 
-# arsenal
+# armoury
 from . import __version__
 from .modules import config
 from .modules import cheat
 from .modules import check
-from .modules import gui as arsenal_gui
+from .modules import gui as armoury_gui
 
 
 class App:
@@ -51,9 +51,9 @@ class App:
 
     def get_args(self):
         examples = '''examples:
-        arsenal
-        arsenal --copy
-        arsenal --print
+        armoury
+        armoury --copy
+        armoury --print
 
         You can manage global variables with:
         >set GLOBALVAR1=<value>
@@ -64,8 +64,8 @@ class App:
         '''
 
         parser = argparse.ArgumentParser(
-            prog="arsenal",
-            description='arsenal v{} - Pentest command launcher'.format(__version__),
+            prog="armoury",
+            description='armoury v{} - Pentest command launcher'.format(__version__),
             epilog=examples,
             formatter_class=argparse.RawTextHelpFormatter
         )
@@ -97,10 +97,10 @@ class App:
             self.start(args, cheatsheets)
 
     def start(self, args, cheatsheets):
-        arsenal_gui.Gui.with_tags = args.no_tags
+        armoury_gui.Gui.with_tags = args.no_tags
 
         # create gui object
-        gui = arsenal_gui.Gui()
+        gui = armoury_gui.Gui()
         while True:
             # launch gui
             cmd = gui.run(cheatsheets, args.prefix)
@@ -115,8 +115,8 @@ class App:
                 elif cmd.cmdline == ">show":
                     if (os.path.exists(config.savevarfile)):
                         with open(config.savevarfile, 'r') as f:
-                            arsenalGlobalVars = json.load(f)
-                            for k, v in arsenalGlobalVars.items():
+                            armouryGlobalVars = json.load(f)
+                            for k, v in armouryGlobalVars.items():
                                 print(k + "=" + v)
                     break
                 elif cmd.cmdline == ">clear":
@@ -127,22 +127,23 @@ class App:
                     # Load previous global var
                     if (os.path.exists(config.savevarfile)):
                         with open(config.savevarfile, 'r') as f:
-                            arsenalGlobalVars = json.load(f)
+                            armouryGlobalVars = json.load(f)
                     else:
-                        arsenalGlobalVars = {}
+                        armouryGlobalVars = {}
                     # Add new glovar var
                     varlist = re.findall("([^= ]+)=([^= ]+)", cmd.cmdline)
                     for v in varlist:
-                        arsenalGlobalVars[v[0]] = v[1]
+                        armouryGlobalVars[v[0]] = v[1]
                     with open(config.savevarfile, "w") as f:
-                        f.write(json.dumps(arsenalGlobalVars))
+                        f.write(json.dumps(armouryGlobalVars))
                 else:
-                    print("Arsenal: invalid internal command..")
+                    print("Armoury: invalid internal command..")
                     break
 
             # Check if it's a C2 payload command and auto-copy to clipboard
             elif self.is_c2_payload_command(cmd.cmdline):
                 self.copy_to_clipboard(cmd.cmdline)
+                # Don't break - return to main menu instead of exiting
 
             # OPT: Copy CMD to clipboard
             elif args.copy:
@@ -218,7 +219,7 @@ class App:
                 fcntl.ioctl(stdin, termios.TIOCSTI, c)
         except OSError:
             message = "========== OSError ============\n"
-            message += "Arsenal needs TIOCSTI enable for running\n"
+            message += "Armoury needs TIOCSTI enable for running\n"
             message += "Please run the following commands as root to fix this issue on the current session :\n"
             message += "sysctl -w dev.tty.legacy_tiocsti=1\n"
             message += "If you want this workaround to survive a reboot,\n" 

@@ -16,7 +16,7 @@ CHEATS_PATHS = [
     join(HOMEPATH, ".cheats"),
     # Add exegol folder
     "/opt/my-resources/my-cheats",
-    "/opt/my-resources/setup/arsenal-cheats"
+    "/opt/my-resources/setup/armoury-cheats"
 ]
 
 messages_error_missing_arguments = 'Error missing arguments'
@@ -25,9 +25,9 @@ messages_error_missing_arguments = 'Error missing arguments'
 os.environ.setdefault('ESCDELAY', '25')
 os.environ['TERM'] = 'xterm-256color'
 
-if os.environ.get('ARSENAL_LOCAL'):
-    savevarfile = join(os.getcwd(), ".arsenal.json")
+if os.environ.get('ARMOURY_LOCAL'):
+    savevarfile = join(os.getcwd(), ".armoury.json")
 else:
-    savevarfile = join(HOMEPATH, ".arsenal.json")
+    savevarfile = join(HOMEPATH, ".armoury.json")
 
-PREFIX_GLOBALVAR_NAME = "arsenal_prefix_cmd"
+PREFIX_GLOBALVAR_NAME = "armoury_prefix_cmd"

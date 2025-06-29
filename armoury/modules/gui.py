@@ -314,7 +314,7 @@ class CheatslistMenu:
             if c == curses.KEY_ENTER or c == 10 or c == 13:
                 # Process selected command (if not empty)
                 if self.selected_cheat() is not None:
-                    Gui.cmd = command.Command(self.selected_cheat(), Gui.arsenalGlobalVars)
+                    Gui.cmd = command.Command(self.selected_cheat(), Gui.armouryGlobalVars)
                     # check if arguments are needed
                     # if len(Gui.cmd.args) != 0:
                     # args needed -> ask
@@ -767,7 +767,7 @@ class ArgslistMenu:
 class Gui:
     # result CMD
     cmd = None
-    arsenalGlobalVars = {}
+    armouryGlobalVars = {}
     savefile = config.savevarfile
     # colors
     BASIC_COLOR = 0  # output std
@@ -837,8 +837,8 @@ class Gui:
 
     @staticmethod
     def prefix_cmdline_with_prefix():
-        if config.PREFIX_GLOBALVAR_NAME in Gui.arsenalGlobalVars:
-            Gui.cmd.cmdline = f"{Gui.arsenalGlobalVars[config.PREFIX_GLOBALVAR_NAME]} {Gui.cmd.cmdline}"
+        if config.PREFIX_GLOBALVAR_NAME in Gui.armouryGlobalVars:
+            Gui.cmd.cmdline = f"{Gui.armouryGlobalVars[config.PREFIX_GLOBALVAR_NAME]} {Gui.cmd.cmdline}"
 
     def run(self, cheatsheets, has_prefix):
         """
@@ -854,7 +854,7 @@ class Gui:
         # if global var save exists load it
         if exists(Gui.savefile):
             with open(Gui.savefile, 'r') as f:
-                Gui.arsenalGlobalVars = json.load(f)
+                Gui.armouryGlobalVars = json.load(f)
 
         wrapper(self.cheats_menu.run)
         if Gui.cmd != None and Gui.cmd.cmdline[0] != '>' and has_prefix:

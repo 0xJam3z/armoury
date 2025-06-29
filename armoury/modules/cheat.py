@@ -62,7 +62,7 @@ class Cheat:
         return tag_string
 
 
-class ArsenalRstVisitor(nodes.GenericNodeVisitor):
+class ArmouryRstVisitor(nodes.GenericNodeVisitor):
     def __init__(self, document, cheats):
         self.cheats = cheats
         super().__init__(document)
@@ -177,7 +177,7 @@ class Cheats:
             settings = OptionParser(components=(rst.Parser,)).get_default_values()
             document = new_document(filename + ".tmp", settings)
             parser.parse(text, document)
-            visitor = ArsenalRstVisitor(document, self)
+            visitor = ArmouryRstVisitor(document, self)
             document.walk(visitor)
 
             # add the last command if done

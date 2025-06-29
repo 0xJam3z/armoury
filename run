@@ -9,4 +9,4 @@ fi ;
 cd "$DIR"
 
 export TERM='xterm-256color'
-exec python3 -m arsenal "$@"
+exec python3 -m armoury "$@"

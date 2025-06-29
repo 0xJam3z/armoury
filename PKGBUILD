@@ -2,16 +2,17 @@
 #Maintainer: Mayfly @M4yFly <https://twitter.com/M4yFly>
 #Maintainer: Erick Sanchez Vera "T1erno" <erickdeveloper2000@outlook com>
 
-pkgname=arsenal
-pkgver=1.2.1
+pkgname=armoury
+pkgver=1.2.7
 pkgrel=1
-pkgdesc='Arsenal is just a quick inventory and launcher for hacking programs'
-url='https://github.com/Orange-Cyberdefense/arsenal'
+pkgdesc='Armoury is just a quick inventory and launcher for hacking programs'
+url='https://github.com/0xJam3z/armoury'
 arch=('any')
-license=('GPL')
-depends=('python>=3.7')
-source=(${pkgname}::git+https://github.com/Orange-Cyberdefense/arsenal.git)
-sha512sums=('SKIP')
+license=('GPL-3.0')
+depends=('python' 'python-pip')
+makedepends=('git')
+source=(${pkgname}::git+https://github.com/0xJam3z/armoury.git)
+sha256sums=('SKIP')
 
 build() {
 	cd $pkgname
@@ -19,13 +20,11 @@ build() {
 }
 
 package() {
-	cd $pkgname
-
-	echo "alias a='arsenal'" >> ~/.bash_aliases
-	echo "alias a='arsenal'" >> ~/.zshrc
-	echo "alias a='arsenal'" >> ~/.bashrc
-
-	python setup.py install --prefix=/usr --root="${pkgdir}" -O1 --skip-build
-	install -Dm 644 LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}
-	install -Dm 644 README.md -t "${pkgdir}"/usr/share/doc/${pkgname}
+	cd "$srcdir/$pkgname"
+	python setup.py install --root="$pkgdir/" --optimize=1
+	mkdir -p "$pkgdir/usr/bin"
+	ln -s /usr/bin/armoury "$pkgdir/usr/bin/a"
+	echo "alias a='armoury'" >> ~/.bash_aliases
+	echo "alias a='armoury'" >> ~/.zshrc
+	echo "alias a='armoury'" >> ~/.bashrc
 }

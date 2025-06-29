@@ -4,7 +4,7 @@
 
 ## chisel server (server on local machine)
 #plateform/linux  #target/remote  #cat/PIVOT 
-All commands on arsenal are done with server on kali machine and client on the target.
+All commands on armoury are done with server on kali machine and client on the target.
 Client or Server can also be launch on windows with chisel.exe
 ```
 ./chisel server -v -p <server_port|8000> --reverse

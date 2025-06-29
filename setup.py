@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Packaging setup for Arsenal
+Packaging setup for Armoury
 """
 import pathlib
 from setuptools import find_packages, setup
@@ -10,16 +10,16 @@ README = (HERE / "README.md").read_text()
 REQUIREMENTS = (HERE / "requirements.txt").read_text()
 
 setup(
-    name='arsenal-cli',
+    name='armoury-cli',
     version='1.2.7',
     packages=find_packages(),
     install_requires=REQUIREMENTS,
     include_package_data=True,
-    url='https://github.com/Orange-Cyberdefense/arsenal',
+    url='https://github.com/0xJam3z/armoury',
     license='GPL-3.0',
     author='Guillaume Muh, mayfly',
     author_email='no-reply@orange.com',
-    description='Arsenal is just a quick inventory, reminder and launcher for pentest commands. ',
+    description='Armoury is just a quick inventory, reminder and launcher for pentest commands. ',
     long_description=README,
     long_description_content_type='text/markdown',
     keywords=[
@@ -52,7 +52,7 @@ setup(
     package_data={'': ['data/cheats/*']},
     entry_points={
         'console_scripts': [
-            'arsenal = arsenal.app:main',
+            'armoury = armoury.app:main',
         ],
     },
 )

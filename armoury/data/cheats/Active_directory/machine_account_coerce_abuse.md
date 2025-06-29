@@ -104,7 +104,7 @@ SpoolSample.exe <target_server> <capture_server>
 
 = user : anonymous
 = pass : anonymous
-= computer_name : arsenal
+= computer_name : armoury
 = dc : DC01.domain.local
 = dc1 : DC01.domain.local
 = dc2 : DC02.domain.local

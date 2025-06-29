@@ -7,11 +7,11 @@
 is a lightweight inventory, quick-access launcher, and command reference tool designed specifically for penetration testers and red teamers.
 
 ---
-![](img/arsenal.gif)
+![](img/armoury.gif)
 
 ---
 ## Credits & Contributions 
-Armoury is an **[Arsenal](https://github.com/Orange-Cyberdefense/arsenal) fork** for more up-to-date and additional tools.
+Armoury is a fork of the original [Arsenal](https://github.com/Orange-Cyberdefense/arsenal) project for more up-to-date and additional tools.
 Authors of this project:
 * 0xSA-X1
 * 0xJam3z
@@ -83,11 +83,11 @@ armoury -f
 # Troubleshooting (From [Arsenal](https://github.com/Orange-Cyberdefense/arsenal))
 ```
 ========== OSError ============
-Arsenal needs TIOCSTI enable for running
+Armoury needs TIOCSTI enable for running
 Please run the following commands as root to fix this issue on the current session :
 sysctl -w dev.tty.legacy_tiocsti=1
 If you want this workaround to survive a reboot,
 add the following configuration to sysctl.conf file and reboot :
 echo "dev.tty.legacy_tiocsti=1" >> /etc/sysctl.conf
-More details about this bug here: https://github.com/Orange-Cyberdefense/arsenal/issues/77
+More details about this bug here: https://github.com/0xJam3z/armoury/issues/77
 ```

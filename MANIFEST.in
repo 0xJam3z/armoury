@@ -1,10 +1,11 @@
 include LICENSE README.md requirements.txt run addalias.sh
 include *.py
-recursive-include arsenal/data/cheats *
+recursive-include armoury/data/cheats *
 recursive-include img *
 recursive-exclude .obsidian *
 recursive-exclude mindmap *
 recursive-exclude my_cheats *
 recursive-exclude cheats/.obsidian *
-recursive-exclude arsenal.egg-info *
+recursive-exclude armoury.egg-info *
+recursive-exclude armoury_cli.egg-info *
 
