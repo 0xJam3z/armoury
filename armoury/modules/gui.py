@@ -185,6 +185,7 @@ def open_in_new_terminal(cmdline):
     """
     Open a command in a new terminal window using the detected terminal
     """
+    import subprocess
     try:
         terminal_cmd = detect_current_terminal()
         # Replace {cmd} placeholder with actual command
@@ -193,8 +194,8 @@ def open_in_new_terminal(cmdline):
         else:
             # For commands that don't use the {cmd} placeholder
             terminal_cmd.append(cmdline)
-        
-        subprocess.Popen(terminal_cmd)
+        # Suppress all output from the subprocess
+        subprocess.Popen(terminal_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         return True
     except Exception as e:
         return False
