@@ -9,6 +9,8 @@ from os.path import commonprefix, exists, isdir
 from os import sep
 import glob
 import re
+import sys
+import contextlib
 
 # local
 from . import config
@@ -652,19 +654,24 @@ class CheatslistMenu:
                 if self.selected_cheat() is not None:
                     # Create command object to check if it has arguments
                     Gui.cmd = command.Command(self.selected_cheat(), Gui.armouryGlobalVars)
-                    
+                    # Do nothing if internal/global command (starts with '>')
+                    if Gui.cmd.cmdline.strip().startswith('>'):
+                        continue
                     # Handle commands with no arguments directly (open in new terminal)
                     if Gui.cmd.nb_args == 0:
                         # Open command in new terminal
                         try:
                             if open_in_new_terminal(Gui.cmd.cmdline):
-                                Notification.show_instant(stdscr, "Opened in new terminal.")
+                                self.notification_message = "Opened in new terminal."
                             else:
-                                Notification.show_instant(stdscr, "Failed to open terminal.")
+                                self.notification_message = "Failed to open terminal."
+                            import time as _time
+                            self.notification_time = _time.time()
                         except Exception as e:
-                            Notification.show_instant(stdscr, f"Failed to open terminal: {str(e)}")
-                        break
-                    
+                            self.notification_message = f"Failed to open terminal: {str(e)}"
+                            import time as _time
+                            self.notification_time = _time.time()
+                        continue
                     # For commands with arguments, go through argument menu
                     args_menu = ArgslistMenu(self)
                     args_menu.run(stdscr)
@@ -1086,7 +1093,9 @@ class ArgslistMenu:
                         if not Gui.cmd.cmdline.startswith('>set'):
                             try:
                                 import pyperclip
-                                pyperclip.copy(Gui.cmd.cmdline)
+                                import os
+                                with open(os.devnull, 'w') as devnull, contextlib.redirect_stdout(devnull), contextlib.redirect_stderr(devnull):
+                                    pyperclip.copy(Gui.cmd.cmdline)
                                 if hasattr(self.previous_menu, 'notification_message'):
                                     self.previous_menu.notification_message = "Copied to clipboard."
                                     import time as _time
