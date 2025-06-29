@@ -607,8 +607,7 @@ class CheatslistMenu:
                     if Gui.cmd.nb_args == 0:
                         # Copy command to clipboard
                         try:
-                            import pyperclip
-                            pyperclip.copy(Gui.cmd.cmdline)
+                            clipboard_copy(Gui.cmd.cmdline)
                             self.notification_message = "Copied to clipboard."
                             import time as _time
                             self.notification_time = _time.time()
@@ -1092,10 +1091,7 @@ class ArgslistMenu:
                         # Copy command to clipboard by default (but not for global variable setting)
                         if not Gui.cmd.cmdline.startswith('>set'):
                             try:
-                                import pyperclip
-                                import os
-                                with open(os.devnull, 'w') as devnull, contextlib.redirect_stdout(devnull), contextlib.redirect_stderr(devnull):
-                                    pyperclip.copy(Gui.cmd.cmdline)
+                                clipboard_copy(Gui.cmd.cmdline)
                                 if hasattr(self.previous_menu, 'notification_message'):
                                     self.previous_menu.notification_message = "Copied to clipboard."
                                     import time as _time
@@ -1272,3 +1268,37 @@ class Gui:
         if Gui.cmd != None and Gui.cmd.cmdline[0] != '>' and has_prefix:
             self.prefix_cmdline_with_prefix()
         return Gui.cmd
+
+def clipboard_copy(text):
+    import shutil
+    import subprocess
+    import sys
+    import os
+    # Try wl-copy (Wayland)
+    if shutil.which('wl-copy'):
+        try:
+            subprocess.run(['wl-copy'], input=text.encode('utf-8'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return
+        except Exception:
+            pass
+    # Try xclip (X11)
+    if shutil.which('xclip'):
+        try:
+            subprocess.run(['xclip', '-selection', 'clipboard'], input=text.encode('utf-8'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return
+        except Exception:
+            pass
+    # Try xsel (X11)
+    if shutil.which('xsel'):
+        try:
+            subprocess.run(['xsel', '--clipboard', '--input'], input=text.encode('utf-8'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return
+        except Exception:
+            pass
+    # Fallback: try pyperclip, but suppress all output
+    try:
+        import pyperclip
+        with open(os.devnull, 'w') as devnull, contextlib.redirect_stdout(devnull), contextlib.redirect_stderr(devnull):
+            pyperclip.copy(text)
+    except Exception:
+        pass
