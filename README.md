@@ -3,7 +3,7 @@
 ![](img/logo.png)
 ---
 
-Armoury is a lightweight inventory, quick-access launcher, and command reference tool designed for penetration testers and red teamers.
+Armoury is a lightweight inventory, quick-access launcher / clipboard tool designed for penetration testers and red teamers.
 
 ![](img/armoury.gif)
 
