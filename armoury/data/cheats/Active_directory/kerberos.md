@@ -5,7 +5,7 @@
 ## Kerbrute usersenum
 #plateform/linux #target/remote #port/88 #protocol/kerberos #cat/ATTACK/BRUTEFORCE-SPRAY 
 ```
-./kerbrute_linux_amd64 userenum -d <domain> --dc <ip> <users_file>
+./kerbrute_linux_amd64 userenum -d <domain> --dc <rhost> <users.txt>
 ```
 
 ## kerberos enum users

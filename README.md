@@ -3,7 +3,7 @@
 ![](img/logo.png)
 ---
 
-Armoury is a lightweight inventory, quick-access launcher / clipboard tool designed for penetration testers and red teamers.you
+Armoury is a lightweight inventory, quick-access launcher / clipboard tool designed for penetration testers and red teamers.
 
 Just search up the command you're looking for, use F2 to open the command in a new terminal or hit enter to have it copied to clipboard.
 
@@ -129,5 +129,8 @@ armoury -f
 ## Troubleshooting
 
 ```
-Nada so far
+This application is meant to be ran from a root terminal. If you want to run it as user you will need to run the following command followed by a reboot:
+echo "dev.tty.legacy_tiocsti=1" | sudo tee -a /etc/sysctl.conf
+
+This program was designed around the root user. If you want to run it properly as a user the above command will solve I/O (command injection) issues.
 ```

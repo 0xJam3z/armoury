@@ -9,6 +9,6 @@ A generic SMB client that will let you list shares and files, rename, upload and
 -no-pass -k : kerberos authentication
 
 ```
-smbclient.py <domain>/<user>:<password>@<ip>
+smbclient.py <domain>/<user>:<password>@<rhost>
 ```
 

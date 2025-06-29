@@ -62,9 +62,6 @@ class Command:
         # Extract argument names from the command
         arg_names = re.findall(r'<([^ <>]+)>', cheat.command)
         arg_names = [a.lower() for a in arg_names]
-        # Only add ip/port if there are no arguments at all
-        if not arg_names:
-            arg_names.extend(['ip', 'port'])
         # Use a list of tuples here instead of dict in case
         # the cmd has multiple args with the same name..
         for arg_name in arg_names:

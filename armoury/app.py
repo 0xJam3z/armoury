@@ -196,10 +196,15 @@ class App:
                 except ImportError:
                     self.prefil_shell_cmd(cmd)
                     break
-            # DEFAULT: Prefill Shell CMD
+            # DEFAULT: Copy CMD to clipboard
             else:
-                self.prefil_shell_cmd(cmd)
-                break
+                try:
+                    import pyperclip
+                    pyperclip.copy(cmd.cmdline)
+                    print(f"Command copied to clipboard: {cmd.cmdline}")
+                except ImportError:
+                    print("pyperclip not available. Command not copied to clipboard.")
+                # Don't break - return to main menu instead of exiting
 
     def prefil_shell_cmd(self, cmd):
         stdin = 0
