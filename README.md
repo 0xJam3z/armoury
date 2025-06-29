@@ -3,7 +3,9 @@
 ![](img/logo.png)
 ---
 
-Armoury is a lightweight inventory, quick-access launcher / clipboard tool designed for penetration testers and red teamers.
+Armoury is a lightweight inventory, quick-access launcher / clipboard tool designed for penetration testers and red teamers.you
+
+Just search up the command you're looking for, use F2 to open the command in a new terminal or hit enter to have it copied to clipboard.
 
 ![](img/armoury.gif)
 
@@ -78,6 +80,7 @@ armoury
 ## Key Bindings
 
 - **Enter**: Copy the selected command to clipboard (with notification)
+- **F2**: Opens the selected command in a new terminal window.
 - **Space**: Open the selected command in a new terminal window
 - **Arrow keys**: Navigate the menu
 - **Page Up/Page Down**: Scroll through the list
@@ -125,15 +128,6 @@ armoury -f
 
 ## Troubleshooting
 
-(From [Arsenal](https://github.com/Orange-Cyberdefense/arsenal))
-
 ```
-========== OSError ============
-Armoury needs TIOCSTI enable for running
-Please run the following commands as root to fix this issue on the current session :
-sysctl -w dev.tty.legacy_tiocsti=1
-If you want this workaround to survive a reboot,
-add the following configuration to sysctl.conf file and reboot :
-echo "dev.tty.legacy_tiocsti=1" >> /etc/sysctl.conf
-More details about this bug here: https://github.com/0xJam3z/armoury/issues/77
+Nada so far
 ```
