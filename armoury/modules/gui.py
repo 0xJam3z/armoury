@@ -87,7 +87,7 @@ def detect_current_terminal():
     if os.environ.get('TERM') == 'xterm-kitty':
         return ['kitty', 'new-window', '--new-tab', '--', 'bash', '-c', '{cmd}']
     
-    # Check for Konsole (KDE)
+    # Check for Konsole (KDE) - most reliable detection
     if os.environ.get('KONSOLE_DBUS_SERVICE') or os.environ.get('KONSOLE_DBUS_WINDOW'):
         return ['konsole', '-e', 'bash', '-c', '{cmd}']
     
@@ -127,24 +127,7 @@ def detect_current_terminal():
     if os.environ.get('TERM') == 'xterm' or os.environ.get('TERM') == 'xterm-256color':
         # Try to detect which terminal is actually running
         try:
-            # Check if we're in a Konsole session
-            if os.path.exists('/proc/self/environ'):
-                with open('/proc/self/environ', 'rb') as f:
-                    environ_data = f.read().decode('utf-8', errors='ignore')
-                    if 'KONSOLE' in environ_data:
-                        return ['konsole', '-e', 'bash', '-c', '{cmd}']
-            
-            # Check if we're in a gnome-terminal session
-            if os.environ.get('WINDOWID'):
-                try:
-                    result = subprocess.run(['xprop', '-id', os.environ.get('WINDOWID'), 'WM_CLASS'], 
-                                          capture_output=True, text=True, timeout=1)
-                    if 'gnome-terminal' in result.stdout.lower():
-                        return ['gnome-terminal', '--', 'bash', '-c', '{cmd}']
-                except:
-                    pass
-            
-            # Check if we're in a Konsole session by checking parent process
+            # Check if we're in a Konsole session by checking parent process (most reliable)
             try:
                 ppid = os.getppid()
                 with open(f'/proc/{ppid}/comm', 'r') as f:
@@ -153,8 +136,31 @@ def detect_current_terminal():
                         return ['konsole', '-e', 'bash', '-c', '{cmd}']
             except:
                 pass
+            
+            # Check if we're in a Konsole session via environment
+            if os.path.exists('/proc/self/environ'):
+                try:
+                    with open('/proc/self/environ', 'rb') as f:
+                        environ_data = f.read().decode('utf-8', errors='ignore')
+                        if 'KONSOLE' in environ_data:
+                            return ['konsole', '-e', 'bash', '-c', '{cmd}']
+                except:
+                    pass
+            
+            # Check if we're in a gnome-terminal session (avoid X11 calls that cause QObject errors)
+            if os.environ.get('WINDOWID'):
+                try:
+                    # Use a more reliable method that doesn't trigger QObject errors
+                    result = subprocess.run(['xprop', '-id', os.environ.get('WINDOWID'), 'WM_CLASS'], 
+                                          capture_output=True, text=True, timeout=2)
+                    if result.returncode == 0 and 'gnome-terminal' in result.stdout.lower():
+                        return ['gnome-terminal', '--', 'bash', '-c', '{cmd}']
+                except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+                    # Silently ignore X11-related errors
+                    pass
                 
-        except:
+        except Exception:
+            # Silently ignore any detection errors
             pass
     
     # Fallback: try common terminals in order of preference
@@ -651,16 +657,12 @@ class CheatslistMenu:
                         # Open command in new terminal
                         try:
                             if open_in_new_terminal(Gui.cmd.cmdline):
-                                self.notification_message = "Opened in new terminal."
+                                Notification.show_instant(stdscr, "Opened in new terminal.")
                             else:
-                                self.notification_message = "Failed to open terminal."
-                            import time as _time
-                            self.notification_time = _time.time()
+                                Notification.show_instant(stdscr, "Failed to open terminal.")
                         except Exception as e:
-                            self.notification_message = f"Failed to open terminal: {str(e)}"
-                            import time as _time
-                            self.notification_time = _time.time()
-                        continue
+                            Notification.show_instant(stdscr, f"Failed to open terminal: {str(e)}")
+                        break
                     
                     # For commands with arguments, go through argument menu
                     args_menu = ArgslistMenu(self)
@@ -1077,6 +1079,7 @@ class ArgslistMenu:
                                 Notification.show_instant(stdscr, "Failed to open terminal.")
                         except Exception as e:
                             Notification.show_instant(stdscr, f"Failed to open terminal: {str(e)}")
+                        break
                     else:
                         # Copy command to clipboard by default (but not for global variable setting)
                         if not Gui.cmd.cmdline.startswith('>set'):
