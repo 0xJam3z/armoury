@@ -2,14 +2,71 @@ import time
 import curses
 import math
 import json
+import subprocess
+import os
 from curses import wrapper
 from os.path import commonprefix, exists, isdir
 from os import sep
 import glob
+import re
 
 # local
 from . import config
 from . import command
+
+
+class Notification:
+    """Simple notification system for displaying messages"""
+    
+    @staticmethod
+    def show(stdscr, message, duration=0.5):
+        """
+        Show a notification message at the bottom of the screen
+        :param stdscr: screen
+        :param message: message to display
+        :param duration: duration in seconds (0.5 default for quick feedback)
+        """
+        height, width = stdscr.getmaxyx()
+        y_pos = height - 2
+        
+        # Create notification window
+        notif_win = curses.newwin(1, len(message) + 4, y_pos, 2)
+        notif_win.bkgd(' ', curses.color_pair(1))  # Use color pair 1 for notification
+        notif_win.addstr(0, 2, message, curses.color_pair(1))
+        notif_win.refresh()
+        
+        # Only wait if duration > 0
+        if duration > 0:
+            time.sleep(duration)
+            
+            # Clear notification
+            notif_win.clear()
+            notif_win.refresh()
+    
+    @staticmethod
+    def show_instant(stdscr, message):
+        """
+        Show a GitHub-style notification message in the top right corner, white text, no border, for 1 second.
+        :param stdscr: screen
+        :param message: message to display
+        """
+        height, width = stdscr.getmaxyx()
+        notif_len = len(message)
+        y_pos = 0  # Top row
+        x_pos = max(0, width - notif_len - 2)  # 2 spaces padding from right edge
+
+        # Create notification window (no border, white text)
+        notif_win = curses.newwin(1, notif_len + 2, y_pos, x_pos)
+        notif_win.bkgd(' ', curses.color_pair(15))  # 15 is usually white in xterm-256color
+        notif_win.addstr(0, 1, message, curses.color_pair(15))
+        notif_win.refresh()
+
+        time.sleep(1.0)  # Keep visible for 1 second
+
+        notif_win.clear()
+        notif_win.refresh()
+        stdscr.touchwin()  # Mark the whole screen for redraw
+        stdscr.refresh()   # Force full redraw
 
 
 class CheatslistMenu:
@@ -19,10 +76,14 @@ class CheatslistMenu:
     input_buffer = ''
     position = 0
     page_position = 0
+    ctrl_enter_pressed = False  # Flag to track Ctrl+Enter
 
     xcursor = None
     x_init = None
     y_init = None
+    notification_message = None
+    notification_time = 0
+    show_clipboard_notification = False  # <-- Add this flag
 
     @staticmethod
     def draw_prompt():
@@ -83,7 +144,7 @@ class CheatslistMenu:
         """
         win_height, win_width = win.getmaxyx()
         prompt = '> '
-        max_width = win_width - len(prompt) - len("\n")
+        max_width = win_width - len(prompt) - 1  # Leave space for newline
 
         title = cheat.tags if cheat.tags != '' else cheat.str_title
 
@@ -104,6 +165,16 @@ class CheatslistMenu:
 
         ratios = Gui.get_ratios_for_column(columns_list)
 
+        # Patch: For set commands, show the current value instead of <value>
+        desc = cheat.printable_command
+        import re
+        m = re.match(r'>set <([^>]+)>=<value>', desc.strip(), re.IGNORECASE)
+        if m:
+            varname = m.group(1).lower()
+            if varname != 'variable':
+                current_val = Gui.armouryGlobalVars.get(f'<{varname}>', '')
+                desc = f'>set <{varname}>={current_val}'
+
         columns = {"tags": {"width": get_col_size(max_width, ratios.get("tags", 0)),
                             "val": tags,
                             "color": Gui.COL4_COLOR_SELECT if selected else Gui.COL4_COLOR},
@@ -114,20 +185,28 @@ class CheatslistMenu:
                             "val": cheat.name,
                             "color": Gui.COL2_COLOR_SELECT if selected else Gui.COL2_COLOR},
                    "description": {"width": get_col_size(max_width, ratios.get("description", 0)),
-                                   "val": cheat.printable_command,
+                                   "val": desc,
                                    "color": Gui.COL3_COLOR_SELECT if selected else Gui.COL3_COLOR}}
 
-        if selected:
-            win.addstr(prompt, curses.color_pair(Gui.CURSOR_COLOR_SELECT))
-        else:
-            win.addstr(' ' * len(prompt), curses.color_pair(Gui.BASIC_COLOR))
+        # Check if we have enough space
+        if max_width <= 0:
+            return
 
-        for column_name in columns_list:
-            win.addstr("{:{}s}".format(Gui.draw_string(columns[column_name]["val"],
-                                                       columns[column_name]["width"]),
-                                       columns[column_name]["width"]),
-                       curses.color_pair(columns[column_name]["color"]))
-        win.addstr("\n")
+        try:
+            if selected:
+                win.addstr(prompt, curses.color_pair(Gui.CURSOR_COLOR_SELECT))
+            else:
+                win.addstr(' ' * len(prompt), curses.color_pair(Gui.BASIC_COLOR))
+
+            for column_name in columns_list:
+                win.addstr("{:{}s}".format(Gui.draw_string(columns[column_name]["val"],
+                                                           columns[column_name]["width"]),
+                                           columns[column_name]["width"]),
+                           curses.color_pair(columns[column_name]["color"]))
+            win.addstr("\n")
+        except curses.error:
+            # If we can't fit the content, just skip this line
+            pass
 
     def draw_cheatslistbox(self):
         """
@@ -135,6 +214,13 @@ class CheatslistMenu:
         """
         y, x = 6, 0
         ncols, nlines = self.width, self.height - 6
+        
+        # Ensure we have valid dimensions
+        if nlines <= 0:
+            nlines = 1
+        if ncols <= 0:
+            ncols = 1
+            
         listwin = curses.newwin(nlines, ncols, y, x)
 
         visible_cheats = self.cheats[self.page_position:self.max_visible_cheats + self.page_position]
@@ -157,6 +243,24 @@ class CheatslistMenu:
         # print nb cmd info (bottom left)
         nbinfowin = curses.newwin(nlines, ncols, y, x)
         nbinfowin.addstr(info, curses.color_pair(Gui.BASIC_COLOR))
+        
+        # Add Ctrl+Enter help text (more compact)
+        help_text = " Enter:Copy | Space:Terminal "
+        help_text_len = len(help_text)
+        
+        # If terminal is too small, use even more compact text
+        if help_text_len >= ncols - 20:
+            help_text = " Enter:Copy | Space:Term "
+            help_text_len = len(help_text)
+        
+        # Make sure there's room for the help text and filename
+        if help_text_len < ncols - 20:  # Leave space for filename
+            try:
+                nbinfowin.addstr(y, ncols - help_text_len, help_text, curses.color_pair(Gui.BASIC_COLOR))
+            except curses.error:
+                # If we can't fit it, don't show it
+                pass
+        
         nbinfowin.refresh()
 
         # print cheatsheet filename (bottom right)
@@ -199,6 +303,13 @@ class CheatslistMenu:
                 return False
         return True
 
+    def get_all_arg_tags(self):
+        tags = set()
+        for cheat in self.globalcheats:
+            for match in re.findall(r'<([^ <>]+)>', cheat.command):
+                tags.add(match)
+        return sorted(tags, key=lambda x: x.lower())
+
     def search(self):
         """
         Return the list of cheatsheet who match the searched term
@@ -225,7 +336,7 @@ class CheatslistMenu:
         :param stdscr: screen
         """
         self.height, self.width = stdscr.getmaxyx()
-        self.max_visible_cheats = self.height - 7
+        self.max_visible_cheats = max(1, self.height - 7)  # Ensure at least 1 visible cheat
         # create prompt windows
         self.draw_prompt()
         # create info windows
@@ -244,6 +355,20 @@ class CheatslistMenu:
         # set cursor position
         curses.setsyx(self.y_init, self.xcursor)
         curses.doupdate()
+        # Draw notification if active
+        import time as _time
+        if self.notification_message and _time.time() - self.notification_time < 1.0:
+            notif = self.notification_message
+            notif_len = len(notif)
+            y_pos = 0
+            x_pos = max(0, self.width - notif_len - 2)
+            notif_win = curses.newwin(1, notif_len + 2, y_pos, x_pos)
+            notif_win.bkgd(' ', curses.color_pair(15))
+            notif_win.addstr(0, 1, notif, curses.color_pair(15))
+            notif_win.refresh()
+        elif self.notification_message:
+            self.notification_message = None
+            self.notification_time = 0
 
     def move_position(self, step):
         """
@@ -306,18 +431,72 @@ class CheatslistMenu:
         self.max_visible_cheats = self.height - 7
         self.cursorpos = 0
 
+        # (Reverted) No startup notification here
+
         while True:
             stdscr.refresh()
             self.cheats = self.search()
             self.draw(stdscr)
+            # Notification loop: if notification_message is set, show it for 1 second, then clear and continue
+            import time as _time
+            if self.notification_message:
+                notif_start = _time.time()
+                while _time.time() - notif_start < 1.0:
+                    self.draw(stdscr)
+                    stdscr.refresh()
+                    _time.sleep(0.05)
+                self.notification_message = None
+                self.notification_time = 0
+                continue  # Redraw menu after notification
             c = stdscr.getch()
-            if c == curses.KEY_ENTER or c == 10 or c == 13:
-                # Process selected command (if not empty)
+            if c == curses.KEY_ENTER or c == 10 or c == 13:  # Enter key
+                self.ctrl_enter_pressed = False
+                selected = self.selected_cheat()
+                if selected is not None:
+                    # Special handling for >clear command
+                    if selected.command.strip() == '>clear':
+                        Gui.armouryGlobalVars.clear()
+                        with open(Gui.savefile, 'w') as f:
+                            json.dump(Gui.armouryGlobalVars, f)
+                        self.notification_message = "All global variables cleared."
+                        import time as _time
+                        self.notification_time = _time.time()
+                        continue
+                    Gui.cmd = command.Command(selected, Gui.armouryGlobalVars)
+                    args_menu = ArgslistMenu(self)
+                    args_menu.run(stdscr)
+                    # After user input, handle >set commands
+                    if selected.command.strip().startswith('>set'):
+                        import re
+                        m = re.match(r'>set <([^>]+)>=<value>', selected.command.strip(), re.IGNORECASE)
+                        if m and m.group(1).lower() == 'variable':
+                            # Generic set: get variable and value from args
+                            var_name, var_val = Gui.cmd.args[0][1], Gui.cmd.args[1][1]
+                            if var_name and var_val:
+                                Gui.armouryGlobalVars[f'<{var_name}>'] = var_val
+                                with open(Gui.savefile, 'w') as f:
+                                    json.dump(Gui.armouryGlobalVars, f)
+                                self.notification_message = f"Set <{var_name}> = {var_val}"
+                                import time as _time
+                                self.notification_time = _time.time()
+                            continue
+                        elif m:
+                            # Specific set: get variable from args
+                            arg_name, arg_val = Gui.cmd.args[0]
+                            if arg_val:
+                                Gui.armouryGlobalVars[f'<{arg_name}>'] = arg_val
+                                with open(Gui.savefile, 'w') as f:
+                                    json.dump(Gui.armouryGlobalVars, f)
+                                self.notification_message = f"Set <{arg_name}> = {arg_val}"
+                                import time as _time
+                                self.notification_time = _time.time()
+                            continue
+                    stdscr.refresh()
+                    break
+            elif c == curses.KEY_F2:  # F2 key for opening in new terminal
+                self.ctrl_enter_pressed = True  # Set flag for new terminal
                 if self.selected_cheat() is not None:
                     Gui.cmd = command.Command(self.selected_cheat(), Gui.armouryGlobalVars)
-                    # check if arguments are needed
-                    # if len(Gui.cmd.args) != 0:
-                    # args needed -> ask
                     args_menu = ArgslistMenu(self)
                     args_menu.run(stdscr)
                     stdscr.refresh()
@@ -364,18 +543,6 @@ class CheatslistMenu:
             elif c == curses.KEY_END:
                 # Move cursor to the END
                 self.xcursor = self.x_init + len(self.input_buffer)
-            elif c == 9:
-                # TAB cmd auto complete
-                if self.input_buffer != "":
-                    predictions = []
-                    for cheat in self.cheats:
-                        if cheat.command.startswith(self.input_buffer):
-                            predictions.append(cheat.command)
-                    if len(predictions) != 0:
-                        self.input_buffer = commonprefix(predictions)
-                        self.xcursor = self.x_init + len(self.input_buffer)
-                        self.position = 0
-                        self.page_position = 0
             elif 20 <= c < 127:
                 i = self.xcursor - self.x_init
                 self.input_buffer = self.input_buffer[:i] + chr(c) + self.input_buffer[i:]
@@ -500,6 +667,10 @@ class ArgslistMenu:
         """
         Draw the selected argument line in the argument menu
         """
+        # Skip if no arguments (like for internal commands)
+        if Gui.cmd.nb_args == 0:
+            return
+            
         y, x = self.AB_TOP + y_pos + self.current_arg, self.AB_SIDE + 1
         ncols, nlines = self.width - 2 * (self.AB_SIDE + 1), 1
         arg = Gui.cmd.args[self.current_arg]
@@ -514,6 +685,10 @@ class ArgslistMenu:
         """
         Draw the asked arguments list in the argument menu
         """
+        # Skip if no arguments (like for internal commands)
+        if Gui.cmd.nb_args == 0:
+            return
+            
         y, x = self.AB_TOP + y_pos, self.AB_SIDE + 1
         ncols, nlines = self.width - 2 * (self.AB_SIDE + 1), Gui.cmd.nb_args + 1
         argwin = curses.newwin(nlines, ncols, y, x)
@@ -548,27 +723,44 @@ class ArgslistMenu:
         # draw command
         argprev.addstr(p_y, p_x, "$ ", curses.color_pair(Gui.BASIC_COLOR))
 
-        # draw preview cmdline
+        # Special handling for generic set command
+        import re
+        if Gui.cmd.cmdline.strip().startswith('>set'):
+            m = re.match(r'>set <variable>=<value>', Gui.cmd.cmdline.strip(), re.IGNORECASE)
+            if m and len(Gui.cmd.args) == 2:
+                # Show as: >set <variable>=<value>
+                var_name = Gui.cmd.args[0][1]
+                var_val = Gui.cmd.args[1][1]
+                preview = f'>set <{var_name}>={var_val}' if var_name else '>set <variable>=<value>'
+                self.draw_preview_part(argprev, preview, curses.color_pair(Gui.BASIC_COLOR))
+                argprev.border()
+                argprev.refresh()
+                return
+        # Default: draw preview cmdline interleaved with args
         for i in range(len(cmdparts) + Gui.cmd.nb_args):
             if i % 2 == 0:
                 # draw cmd parts in white
-                self.draw_preview_part(argprev, cmdparts[i // 2], curses.color_pair(Gui.BASIC_COLOR))
+                idx = i // 2
+                if idx < len(cmdparts):
+                    self.draw_preview_part(argprev, cmdparts[idx], curses.color_pair(Gui.BASIC_COLOR))
             else:
                 # get argument value
-                if Gui.cmd.args[(i - 1) // 2][1] == "":
-                    # if arg empty use its name
-                    arg = '<' + Gui.cmd.args[(i - 1) // 2][0] + '>'
-                else:
-                    # else its value
-                    arg = Gui.cmd.args[(i - 1) // 2][1]
+                arg_idx = (i - 1) // 2
+                if arg_idx < len(Gui.cmd.args):
+                    if Gui.cmd.args[arg_idx][1] == "":
+                        # if arg empty use its name
+                        arg = '<' + Gui.cmd.args[arg_idx][0] + '>'
+                    else:
+                        # else its value
+                        arg = Gui.cmd.args[arg_idx][1]
 
-                # draw argument
-                if (i - 1) // 2 == self.current_arg:
-                    # if arg is selected print in blue
-                    self.draw_preview_part(argprev, arg, curses.color_pair(Gui.ARG_NAME_COLOR))
-                else:
-                    # else in white
-                    self.draw_preview_part(argprev, arg, curses.color_pair(Gui.BASIC_COLOR))
+                    # draw argument
+                    if arg_idx == self.current_arg:
+                        # if arg is selected print in blue
+                        self.draw_preview_part(argprev, arg, curses.color_pair(Gui.ARG_NAME_COLOR))
+                    else:
+                        # else in white
+                        self.draw_preview_part(argprev, arg, curses.color_pair(Gui.BASIC_COLOR))
         argprev.border()
         argprev.refresh()
 
@@ -699,10 +891,51 @@ class ArgslistMenu:
             c = stdscr.getch()
             if c == curses.KEY_ENTER or c == 10 or c == 13:
                 # try to build the cmd
-                # if cmd build is ok -> exit
+                # if cmd build is ok -> copy to clipboard and return to main menu
                 # else continue in args menu
                 if Gui.cmd.build():
-                    break
+                    # Persist <ip> and <port> globally if set
+                    for arg_name, arg_val in Gui.cmd.args:
+                        if arg_name in ['<ip>', 'ip', '<port>', 'port'] and arg_val:
+                            # Always store as <ip> or <port>
+                            key = '<ip>' if 'ip' in arg_name else '<port>'
+                            Gui.armouryGlobalVars[key] = arg_val
+                            with open(Gui.savefile, 'w') as f:
+                                json.dump(Gui.armouryGlobalVars, f)
+                    if hasattr(self.previous_menu, 'ctrl_enter_pressed') and self.previous_menu.ctrl_enter_pressed:
+                        # Open command in new terminal
+                        try:
+                            # Try to open in a new terminal window
+                            if os.environ.get('TERM_PROGRAM') == 'iTerm.app':
+                                subprocess.Popen(['osascript', '-e', f'tell application "iTerm" to create window with default profile command "{Gui.cmd.cmdline}"'])
+                            elif os.environ.get('TERM_PROGRAM') == 'Apple_Terminal':
+                                subprocess.Popen(['osascript', '-e', f'tell application "Terminal" to do script "{Gui.cmd.cmdline}"'])
+                            elif os.environ.get('TERM') == 'xterm-kitty':
+                                subprocess.Popen(['kitty', 'new-window', '--new-tab', '--', 'bash', '-c', Gui.cmd.cmdline])
+                            elif os.environ.get('TERM') == 'xterm-256color' and os.path.exists('/usr/bin/gnome-terminal'):
+                                subprocess.Popen(['gnome-terminal', '--', 'bash', '-c', Gui.cmd.cmdline])
+                            elif os.environ.get('TERM') == 'xterm-256color' and os.path.exists('/usr/bin/konsole'):
+                                subprocess.Popen(['konsole', '-e', 'bash', '-c', Gui.cmd.cmdline])
+                            elif os.environ.get('TERM') == 'xterm-256color' and os.path.exists('/usr/bin/xterm'):
+                                subprocess.Popen(['xterm', '-e', 'bash', '-c', Gui.cmd.cmdline])
+                            else:
+                                subprocess.Popen(['x-terminal-emulator', '-e', 'bash', '-c', Gui.cmd.cmdline])
+                            Notification.show_instant(stdscr, "Opened in new terminal.")
+                        except Exception as e:
+                            Notification.show_instant(stdscr, f"Failed to open terminal: {str(e)}")
+                    else:
+                        # Copy command to clipboard by default (but not for global variable setting)
+                        if not Gui.cmd.cmdline.startswith('>set'):
+                            try:
+                                import pyperclip
+                                pyperclip.copy(Gui.cmd.cmdline)
+                                if hasattr(self.previous_menu, 'notification_message'):
+                                    self.previous_menu.notification_message = "Copied to clipboard."
+                                    import time as _time
+                                    self.previous_menu.notification_time = _time.time()
+                            except ImportError:
+                                Notification.show_instant(stdscr, "pyperclip not available.")
+                        break
             elif c == curses.KEY_F10 or c == 27:
                 # exit args_menu -> return to cheatslist_menu
                 self.previous_menu.run(stdscr)
@@ -799,8 +1032,15 @@ class Gui:
         """ Init curses colors """
         curses.start_color()
         curses.use_default_colors()
-        for i in range(0, 255):
-            curses.init_pair(i + 1, i, -1)
+        # Try to initialize 256 color pairs if possible
+        try:
+            for i in range(0, 255):
+                curses.init_pair(i + 1, i, -1)
+            # Explicitly set color pair 15 as white on black
+            curses.init_pair(15, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        except Exception:
+            # Fallback: just set color pair 15 as white on black
+            curses.init_pair(15, curses.COLOR_WHITE, curses.COLOR_BLACK)
 
     @classmethod
     def get_ratios_for_column(cls, columns_in_use):
@@ -855,6 +1095,11 @@ class Gui:
         if exists(Gui.savefile):
             with open(Gui.savefile, 'r') as f:
                 Gui.armouryGlobalVars = json.load(f)
+        # Ensure <ip> and <port> are always present
+        if '<ip>' not in Gui.armouryGlobalVars:
+            Gui.armouryGlobalVars['<ip>'] = ''
+        if '<port>' not in Gui.armouryGlobalVars:
+            Gui.armouryGlobalVars['<port>'] = ''
 
         wrapper(self.cheats_menu.run)
         if Gui.cmd != None and Gui.cmd.cmdline[0] != '>' and has_prefix:

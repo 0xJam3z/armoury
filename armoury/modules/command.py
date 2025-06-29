@@ -44,23 +44,48 @@ class Command:
         Process cmdline from the cheatsheet to get args names
         """
         self.args = []
+        # Special handling for >set <var>=<value> pattern
+        if cheat.command.strip().startswith('>set'):
+            m = re.match(r'>set <([^>]+)>=<value>', cheat.command.strip(), re.IGNORECASE)
+            if m:
+                varname = m.group(1).lower()
+                if varname == 'variable':
+                    # Generic set: prompt for variable and value
+                    self.args = [['variable', ''], ['value', '']]
+                else:
+                    # Specific set: prompt for just the variable
+                    self.args = [[varname, gvars.get(f'<{varname}>', '')]]
+            else:
+                # fallback: just show variable
+                self.args = [['variable', '']]
+            return
+        # Extract argument names from the command
+        arg_names = re.findall(r'<([^ <>]+)>', cheat.command)
+        arg_names = [a.lower() for a in arg_names]
+        # Only add ip/port if there are no arguments at all
+        if not arg_names:
+            arg_names.extend(['ip', 'port'])
         # Use a list of tuples here instead of dict in case
         # the cmd has multiple args with the same name..
-        for arg_name in re.findall(r'<([^ <>]+)>', cheat.command):
-            if "|" in arg_name:  # Format <name|default_value>
-                name, var = arg_name.split("|")[:2]
+        for arg_name in arg_names:
+            if '|' in arg_name:  # Format <name|default_value>
+                name, var = arg_name.split("|", 1)
                 self.args.append([name, var])
                 # Variable has been added to cheat variables before, remove it
                 cheat.command = cheat.command.replace(arg_name, name)
                 self.cmdline = cheat.command
-            elif arg_name in gvars:
-                self.args.append([arg_name, gvars[arg_name]])
+            elif f'<{arg_name}>' in gvars:
+                self.args.append([arg_name, gvars[f'<{arg_name}>']])
             elif arg_name in cheat.variables:
                 self.args.append([arg_name, cheat.variables[arg_name]])
             else:
                 self.args.append([arg_name, ""])
 
     def get_command_parts(self):
+        # Special handling for internal commands (starting with '>')
+        if self.cmdline.startswith('>'):
+            return [self.cmdline]
+        
         if self.nb_args != 0:
             regex = ''.join('<' + arg[0] + '>|' for arg in self.args)[:-1]
             cmdparts = re.split(regex, self.cmdline)
@@ -74,6 +99,10 @@ class Command:
         -> if some args values are still empty do nothing
         -> else build the final command string by adding args values
         """
+        # Special handling for internal commands (starting with '>')
+        if self.cmdline.startswith('>'):
+            return True
+            
         if self.nb_args == 0 :
             return True
         argsval = [a[1] for a in self.args]
