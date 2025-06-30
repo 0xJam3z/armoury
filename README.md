@@ -128,9 +128,8 @@ armoury -f
 
 ## Troubleshooting
 
-```
 This application is meant to be ran from a root terminal. If you want to run it as user you will need to run the following command followed by a reboot:
 echo "dev.tty.legacy_tiocsti=1" | sudo tee -a /etc/sysctl.conf
 
 This program was designed around the root user. If you want to run it properly as a user the above command will solve I/O (command injection) issues.
-```
+
