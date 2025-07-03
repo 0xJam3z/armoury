@@ -23,6 +23,13 @@ Original Authors of [Arsenal](https://github.com/Orange-Cyberdefense/arsenal):
 
 ---
 
+# **Quick Install**
+```
+pipx install git+https://github.com/0xJam3z/armoury.git
+
+armoury
+```
+
 # **New Features**
 
 - Modernized color scheme and UI improvements
