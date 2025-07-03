@@ -13,6 +13,7 @@ class Command:
 
     def __init__(self, cheat, gvars):
         self.cmdline = cheat.command
+        self.original_cheat = cheat  # Store reference to original cheat for usage tracking
 
         self.cmd_tags = cheat.command_tags
         self.description = ''

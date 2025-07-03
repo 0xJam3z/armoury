@@ -15,6 +15,7 @@ import contextlib
 # local
 from . import config
 from . import command
+from . import popularity
 
 
 class Notification:
@@ -218,6 +219,9 @@ class CheatslistMenu:
     notification_message = None
     notification_time = 0
     show_clipboard_notification = False  # <-- Add this flag
+    
+    # Popularity manager for sorting commands
+    popularity_manager = None
 
     @staticmethod
     def draw_prompt():
@@ -453,6 +457,11 @@ class CheatslistMenu:
             list_cheat = list(filter(self.match, self.globalcheats))
         else:
             list_cheat = self.globalcheats
+        
+        # Sort cheats by popularity and usage if popularity manager is available
+        if self.popularity_manager:
+            list_cheat = self.popularity_manager.sort_cheats_by_popularity_and_usage(list_cheat)
+        
         return list_cheat
 
     def selected_cheat(self):
@@ -605,6 +614,10 @@ class CheatslistMenu:
                     
                     # Handle commands with no arguments directly (copy to clipboard)
                     if Gui.cmd.nb_args == 0:
+                        # Track usage for non-internal commands
+                        if not selected.command.startswith('>') and self.popularity_manager:
+                            self.popularity_manager.increment_usage(selected)
+                        
                         # Copy command to clipboard
                         try:
                             clipboard_copy(Gui.cmd.cmdline)
@@ -658,6 +671,10 @@ class CheatslistMenu:
                         continue
                     # Handle commands with no arguments directly (open in new terminal)
                     if Gui.cmd.nb_args == 0:
+                        # Track usage for non-internal commands
+                        if not selected.command.startswith('>') and self.popularity_manager:
+                            self.popularity_manager.increment_usage(selected)
+                        
                         # Open command in new terminal
                         try:
                             if open_in_new_terminal(Gui.cmd.cmdline):
@@ -1069,6 +1086,12 @@ class ArgslistMenu:
                 # if cmd build is ok -> copy to clipboard and return to main menu
                 # else continue in args menu
                 if Gui.cmd.build():
+                    # Track usage for non-internal commands
+                    if not Gui.cmd.cmdline.startswith('>') and hasattr(self.previous_menu, 'popularity_manager') and self.previous_menu.popularity_manager:
+                        # Use the original cheat reference stored in the command object
+                        if hasattr(Gui.cmd, 'original_cheat'):
+                            self.previous_menu.popularity_manager.increment_usage(Gui.cmd.original_cheat)
+                    
                     # Persist <ip> and <port> globally if set
                     for arg_name, arg_val in Gui.cmd.args:
                         if arg_name in ['<ip>', 'ip', '<port>', 'port'] and arg_val:
@@ -1078,6 +1101,11 @@ class ArgslistMenu:
                             with open(Gui.savefile, 'w') as f:
                                 json.dump(Gui.armouryGlobalVars, f)
                     if hasattr(self.previous_menu, 'ctrl_enter_pressed') and self.previous_menu.ctrl_enter_pressed:
+                        # Track usage for non-internal commands
+                        if not Gui.cmd.cmdline.startswith('>') and hasattr(self.previous_menu, 'popularity_manager') and self.previous_menu.popularity_manager:
+                            if hasattr(Gui.cmd, 'original_cheat'):
+                                self.previous_menu.popularity_manager.increment_usage(Gui.cmd.original_cheat)
+                        
                         # Open command in new terminal
                         try:
                             if open_in_new_terminal(Gui.cmd.cmdline):
@@ -1253,6 +1281,9 @@ class Gui:
             self.cheats_menu = CheatslistMenu()
             for value in cheatsheets.values():
                 self.cheats_menu.globalcheats.append(value)
+            
+            # Initialize popularity manager
+            self.cheats_menu.popularity_manager = popularity.PopularityManager()
 
         # if global var save exists load it
         if exists(Gui.savefile):
