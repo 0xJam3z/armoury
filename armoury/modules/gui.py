@@ -498,20 +498,6 @@ class CheatslistMenu:
         # set cursor position
         curses.setsyx(self.y_init, self.xcursor)
         curses.doupdate()
-        # Draw notification if active
-        import time as _time
-        if self.notification_message and _time.time() - self.notification_time < 1.0:
-            notif = self.notification_message
-            notif_len = len(notif)
-            y_pos = 0
-            x_pos = max(0, self.width - notif_len - 2)
-            notif_win = curses.newwin(1, notif_len + 2, y_pos, x_pos)
-            notif_win.bkgd(' ', curses.color_pair(15))
-            notif_win.addstr(0, 1, notif, curses.color_pair(15))
-            notif_win.refresh()
-        elif self.notification_message:
-            self.notification_message = None
-            self.notification_time = 0
 
     def move_position(self, step):
         """
@@ -584,10 +570,25 @@ class CheatslistMenu:
             import time as _time
             if self.notification_message:
                 notif_start = _time.time()
+                # Create notification window once
+                notif = self.notification_message
+                notif_len = len(notif)
+                y_pos = 0
+                x_pos = max(0, self.width - notif_len - 2)
+                notif_win = curses.newwin(1, notif_len + 2, y_pos, x_pos)
+                notif_win.bkgd(' ', curses.color_pair(15))
+                notif_win.addstr(0, 1, notif, curses.color_pair(15))
+                notif_win.refresh()
+                
+                # Wait for duration without redrawing the entire screen
                 while _time.time() - notif_start < 1.0:
-                    self.draw(stdscr)
-                    stdscr.refresh()
-                    _time.sleep(0.05)
+                    _time.sleep(0.1)  # Reduced frequency from 0.05 to 0.1
+                
+                # Clear notification window
+                notif_win.clear()
+                notif_win.refresh()
+                del notif_win
+                
                 self.notification_message = None
                 self.notification_time = 0
                 continue  # Redraw menu after notification
